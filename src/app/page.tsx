@@ -65,14 +65,16 @@ export default function Home() {
         <div className="aspect-[2/3] bg-zinc-800" />
 
         <div className="p-5">
-          <h3 className="text-lg font-semibold">Book Title</h3>
+         <h3 className="text-lg font-semibold">
+  Coming Soon
+</h3>
 
-          <p className="mt-2 text-sm text-zinc-400">
-            MM Romance • Kindle Unlimited
-          </p>
+        <p className="mt-2 text-sm leading-6 text-zinc-400">
+  Your latest MM romances will appear here with covers, tropes, and direct Amazon links.
+</p>
 
           <button className="mt-5 rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black">
-            View Book
+            Coming Soon
           </button>
         </div>
       </div>

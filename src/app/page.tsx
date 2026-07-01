@@ -8,13 +8,17 @@ export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#050505] px-6 py-10 text-white">
       <section className="mx-auto flex max-w-7xl flex-col items-center text-center">
-        <p className="text-sm uppercase tracking-[0.4em] text-[#ff2f8f]">
-          Marlow Quinn Author
-        </p>
+      <h1 className="text-5xl font-bold uppercase tracking-[0.18em] sm:text-7xl">
+  Marlow Quinn
+</h1>
 
-        <h1 className="mt-4 max-w-3xl text-3xl font-bold leading-tight sm:text-5xl">
-          Emotional MM Romance with bite, heat, and heart.
-        </h1>
+<p className="mt-3 text-sm uppercase tracking-[0.45em] text-[#ff2f8f]">
+  Author
+</p>
+
+<p className="mx-auto mt-6 max-w-2xl text-xl leading-8 text-zinc-200 sm:text-2xl">
+  Emotional MM Romance with bite, heat, and heart.
+</p>
 
         <div className="mt-10 w-full overflow-hidden">
           <div className="flex w-max animate-[scrollBooks_35s_linear_infinite] gap-6">

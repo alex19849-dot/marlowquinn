@@ -42,17 +42,17 @@ export default function BooksPage() {
                   {book.tropes.join(" • ")}
                 </p>
 
-                {book.ku && (
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#ff2f8f]">
-                    Kindle Unlimited
-                  </p>
-                )}
+               {book.ku && (
+  <p className="mt-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-[#ff2f8f]">
+    Kindle Unlimited
+  </p>
+)}
 
                <Link
   href={book.amazon}
   target="_blank"
   rel="noopener noreferrer"
-  className="mt-5 inline-block rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
+ className="mt-5 block w-fit mx-auto rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
 >
   View on Amazon
 </Link>

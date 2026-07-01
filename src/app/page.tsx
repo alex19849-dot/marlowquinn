@@ -37,6 +37,9 @@ export default function Home() {
             </Link>
           </div>
         </div>
+        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.3em] text-zinc-500">
+  Scroll
+</div>
       </section>
       <section className="mx-auto max-w-7xl px-6 py-24">
   <div className="mb-12 text-center">

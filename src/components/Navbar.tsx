@@ -28,7 +28,7 @@ export default function Navbar() {
           />
         </Link>
 
-        <div className="flex items-center gap-8 text-sm font-medium uppercase tracking-[0.2em]">
+       <div className="flex items-center gap-5 overflow-x-auto text-xs font-medium uppercase tracking-[0.18em] sm:gap-8 sm:text-sm sm:tracking-[0.2em]">
           {links.map((link) => {
             const isActive = pathname === link.href;
 

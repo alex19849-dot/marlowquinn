@@ -92,7 +92,7 @@ export default async function BookPage({ params }: BookPageProps) {
               </h2>
 
               <div className="mt-4 flex flex-wrap gap-2">
-                {book.contentWarnings.map((warning) => (
+                {book.contentWarnings?.map((warning) => (
                   <span
                     key={warning}
                     className="rounded-full bg-black px-4 py-2 text-sm text-zinc-300"

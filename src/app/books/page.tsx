@@ -48,12 +48,14 @@ export default function BooksPage() {
                   </p>
                 )}
 
-                <Link
-                  href={book.amazon}
-                  className="mt-5 inline-block rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
-                >
-                  View on Amazon
-                </Link>
+               <Link
+  href={book.amazon}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="..."
+>
+  View on Amazon
+</Link>
               </div>
             </div>
           ))}

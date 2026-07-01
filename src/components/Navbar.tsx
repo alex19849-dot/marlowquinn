@@ -1,6 +1,5 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { useState } from "react";
@@ -19,27 +18,17 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800/70 bg-black/90 backdrop-blur-md">
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
-        <Link href="/" className="transition hover:opacity-80">
-          <Image
-            src="/marlow-logo.png"
-            alt="Marlow Quinn"
-            width={70}
-            height={70}
-            priority
-          />
-        </Link>
-
+      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-center px-6">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="text-3xl text-white md:hidden"
+          className="ml-auto text-3xl text-white md:hidden"
           aria-label="Open navigation menu"
         >
           ☰
         </button>
 
-        <div className="hidden items-center gap-8 text-sm font-medium uppercase tracking-[0.2em] md:flex">
+        <div className="hidden items-center justify-center gap-10 text-sm font-medium uppercase tracking-[0.25em] md:flex">
           {links.map((link) => {
             const isActive = pathname === link.href;
 

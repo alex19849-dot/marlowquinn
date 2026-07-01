@@ -18,11 +18,11 @@ export default function Home() {
            className="mx-auto w-full max-w-2xl lg:max-w-[700px]"
           />
 
-          <p className="mt-8 text-xl text-zinc-200 sm:text-2xl">
+          <p className="mt-5 text-xl text-zinc-200 sm:text-2xl">
             Emotional MM Romance with bite, heat, and heart.
           </p>
 
-          <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
+          <div className="mt-6 flex flex-col justify-center gap-4 sm:flex-row">
             <Link
               href="/books"
               className="rounded-full bg-[#ff2f8f] px-8 py-3 font-semibold text-black"

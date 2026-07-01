@@ -64,7 +64,11 @@ export default async function BookPage({ params }: BookPageProps) {
               Kindle Unlimited
             </p>
           )}
-
+{"blurb" in book && (
+  <p className="mt-6 max-w-2xl text-base leading-8 text-zinc-300">
+    {book.blurb}
+  </p>
+)}
           <div className="mt-6 flex flex-wrap gap-2">
             {book.tropes.map((trope) => (
               <span

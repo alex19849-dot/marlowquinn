@@ -23,11 +23,13 @@ export default function Home() {
         <div className="mt-6 w-full overflow-hidden">
           <div className="flex w-max animate-[scrollBooks_35s_linear_infinite] gap-6">
             {carouselBooks.map((book, index) => (
-              <Link
-                key={`${book.slug}-${index}`}
-                href={book.amazon}
-                className="w-[150px] shrink-0 sm:w-[190px] lg:w-[220px]"
-              >
+             <Link
+  key={`${book.slug}-${index}`}
+  href={book.amazon}
+  target="_blank"
+  rel="noopener noreferrer"
+  className="w-[150px] shrink-0 sm:w-[190px] lg:w-[220px]"
+>
                 <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50">
                   <Image
                     src={book.cover}

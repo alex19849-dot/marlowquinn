@@ -22,7 +22,7 @@ export default function Navbar() {
       <nav className="mx-auto flex h-20 max-w-7xl items-center justify-between px-6">
         <Link href="/" className="transition hover:opacity-80">
           <Image
-            src="/marlow-logo.png"
+            src="/marlow-logo.jpg"
             alt="Marlow Quinn"
             width={70}
             height={70}

@@ -10,7 +10,6 @@ type BookPageProps = {
 
 export default async function BookPage({ params }: BookPageProps) {
   const { slug } = await params;
-
   const book = books.find((item) => item.slug === slug);
 
   if (!book) {
@@ -31,6 +30,9 @@ export default async function BookPage({ params }: BookPageProps) {
 
   const hasBlurb = "blurb" in book;
   const hasContentWarnings = "contentWarnings" in book;
+  const hasHeat = "heat" in book;
+  const hasLength = "length" in book;
+  const hasEnding = "ending" in book;
 
   return (
     <main className="min-h-screen bg-[#050505] px-6 py-12 text-white">
@@ -46,15 +48,15 @@ export default async function BookPage({ params }: BookPageProps) {
           />
         </div>
 
-        <div className="flex flex-col justify-center">
+        <div>
           <Link
             href="/books"
-            className="mb-8 text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]"
+            className="text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]"
           >
             ← Back to Books
           </Link>
 
-          <p className="text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
+          <p className="mt-8 text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
             {book.subgenre}
           </p>
 
@@ -85,52 +87,54 @@ export default async function BookPage({ params }: BookPageProps) {
             ))}
           </div>
 
+          <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+            <h2 className="text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]">
+              Book Details
+            </h2>
+
+            <div className="mt-5 grid gap-5 sm:grid-cols-2">
+              <div>
+                <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+                  Genre
+                </p>
+                <p className="mt-1 text-white">{book.subgenre}</p>
+              </div>
+
+              {hasHeat && (
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+                    Heat
+                  </p>
+                  <p className="mt-1 text-[#ff2f8f]">{book.heat}</p>
+                </div>
+              )}
+
+              {hasLength && (
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+                    Length
+                  </p>
+                  <p className="mt-1 text-white">{book.length}</p>
+                </div>
+              )}
+
+              {hasEnding && (
+                <div>
+                  <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+                    Ending
+                  </p>
+                  <p className="mt-1 text-white">{book.ending}</p>
+                </div>
+              )}
+            </div>
+          </div>
+
           {hasContentWarnings && (
-            <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+            <div className="mt-6 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
               <h2 className="text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]">
                 Content Warnings
               </h2>
-<div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
-  <h2 className="text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]">
-    Book Details
-  </h2>
 
-  <div className="mt-5 grid gap-4 sm:grid-cols-2">
-    <div>
-      <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-        Genre
-      </p>
-      <p className="mt-1 text-white">{book.subgenre}</p>
-    </div>
-
-    {"heat" in book && (
-      <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-          Heat
-        </p>
-        <p className="mt-1 text-[#ff2f8f]">{book.heat}</p>
-      </div>
-    )}
-
-    {"length" in book && (
-      <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-          Length
-        </p>
-        <p className="mt-1 text-white">{book.length}</p>
-      </div>
-    )}
-
-    {"ending" in book && (
-      <div>
-        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
-          Ending
-        </p>
-        <p className="mt-1 text-white">{book.ending}</p>
-      </div>
-    )}
-  </div>
-</div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {book.contentWarnings?.map((warning) => (
                   <span
@@ -148,7 +152,7 @@ export default async function BookPage({ params }: BookPageProps) {
             href={book.amazon}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-8 w-fit rounded-full bg-[#ff2f8f] px-8 py-3 font-semibold text-black"
+            className="mt-8 inline-block rounded-full bg-[#ff2f8f] px-8 py-3 font-semibold text-black"
           >
             View on Amazon
           </Link>

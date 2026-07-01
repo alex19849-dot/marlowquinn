@@ -1,16 +1,23 @@
+import Image from "next/image";
+
 export default function Home() {
   return (
     <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
       <section className="mx-auto flex max-w-5xl flex-col items-center justify-center text-center">
-        <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
+        <p className="mb-6 text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
           MM Romance Author
         </p>
 
-        <h1 className="text-5xl font-bold tracking-tight sm:text-7xl">
-          Marlow Quinn
-        </h1>
+        <Image
+          src="/marlow-logo.png"
+          alt="Marlow Quinn Author Logo"
+          width={900}
+          height={450}
+          priority
+          className="w-full max-w-3xl"
+        />
 
-        <p className="mt-6 max-w-2xl text-xl text-zinc-300">
+        <p className="mt-8 max-w-2xl text-xl text-zinc-300">
           Emotional MM Romance with bite, heat, and heart.
         </p>
 

@@ -5,7 +5,7 @@ import { books } from "@/data/books";
 export default function Home() {
   return (
     <main className="min-h-screen overflow-hidden bg-[#050505] text-white">
-      <section className="relative flex min-h-[calc(100vh-80px)] items-center justify-center px-6 py-20 text-center">
+      <section className="relative flex items-center justify-center px-6 py-12 text-center sm:py-16">
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,rgba(255,47,143,0.22),transparent_35%)]" />
 
         <div className="relative z-10 mx-auto max-w-5xl">
@@ -38,9 +38,7 @@ export default function Home() {
             </Link>
           </div>
         </div>
-        <div className="absolute bottom-8 left-1/2 -translate-x-1/2 text-xs uppercase tracking-[0.3em] text-zinc-500">
-  Scroll
-</div>
+       
       </section>
       <section className="mx-auto max-w-7xl px-6 py-24">
   <div className="mb-12 text-center">

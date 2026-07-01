@@ -46,17 +46,17 @@ export default function Home() {
           </div>
         </div>
 
-       <div className="mt-6 flex flex-row justify-center gap-3">
+      <div className="mt-5 flex flex-row justify-center gap-3">
           <Link
             href="/books"
-            className="rounded-full bg-[#ff2f8f] px-8 py-3 font-semibold text-black"
+            className="rounded-full bg-[#ff2f8f] px-6 py-3 text-sm font-semibold text-black sm:px-8 sm:text-base"
           >
             Browse Books
           </Link>
 
           <Link
             href="/newsletter"
-            className="rounded-full border border-zinc-700 px-8 py-3 font-semibold text-white"
+           className="rounded-full border border-zinc-700 px-6 py-3 text-sm font-semibold text-white sm:px-8 sm:text-base"
           >
             Join Newsletter
           </Link>

@@ -6,13 +6,15 @@ export default function BooksPage() {
   return (
     <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
       <section className="mx-auto max-w-7xl">
-        <p className="mb-4 text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
+        <p className="mb-4 text-center text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
           Marlow Quinn Books
         </p>
 
-        <h1 className="text-4xl font-bold sm:text-6xl">Books</h1>
+        <h1 className="text-center text-4xl font-bold sm:text-6xl">
+          Books
+        </h1>
 
-        <p className="mt-6 max-w-2xl text-zinc-400">
+        <p className="mx-auto mt-6 max-w-2xl text-center text-zinc-400">
           Dark, emotional MM romance with heat, tension, found family, and
           happily-ever-afters worth fighting for.
         </p>
@@ -23,16 +25,22 @@ export default function BooksPage() {
               key={book.slug}
               className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/40 transition duration-300 hover:-translate-y-1 hover:border-[#ff2f8f]"
             >
-              <Image
-                src={book.cover}
-                alt={`${book.title} book cover`}
-                width={400}
-                height={600}
-                className="aspect-[2/3] w-full object-cover"
-              />
+              <Link href={`/books/${book.slug}`} className="block">
+                <Image
+                  src={book.cover}
+                  alt={`${book.title} book cover`}
+                  width={400}
+                  height={600}
+                  className="aspect-[2/3] w-full object-cover"
+                />
+              </Link>
 
-              <div className="p-5">
-                <h2 className="text-lg font-semibold">{book.title}</h2>
+              <div className="p-5 text-center">
+                <Link href={`/books/${book.slug}`}>
+                  <h2 className="text-lg font-semibold hover:text-[#ff2f8f]">
+                    {book.title}
+                  </h2>
+                </Link>
 
                 <p className="mt-2 text-sm text-zinc-400">
                   {book.subgenre}
@@ -42,21 +50,20 @@ export default function BooksPage() {
                   {book.tropes.join(" • ")}
                 </p>
 
-               {book.ku && (
-  <p className="mt-3 text-center text-xs font-semibold uppercase tracking-[0.2em] text-[#ff2f8f]">
-    Kindle Unlimited
-  </p>
-)}
+                {book.ku && (
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#ff2f8f]">
+                    Kindle Unlimited
+                  </p>
+                )}
 
-              <Link
-  key={book.slug}
-  href={`/books/${book.slug}`}
-  target="_blank"
-  rel="noopener noreferrer"
- className="mt-5 block w-fit mx-auto rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
->
-  View on Amazon
-</Link>
+                <Link
+                  href={book.amazon}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mx-auto mt-5 block w-fit rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
+                >
+                  View on Amazon
+                </Link>
               </div>
             </div>
           ))}

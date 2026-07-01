@@ -52,7 +52,7 @@ export default function BooksPage() {
   href={book.amazon}
   target="_blank"
   rel="noopener noreferrer"
-  className="..."
+  className="mt-5 inline-block rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
 >
   View on Amazon
 </Link>

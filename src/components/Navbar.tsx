@@ -18,11 +18,11 @@ export default function Navbar() {
 
   return (
     <header className="sticky top-0 z-50 border-b border-zinc-800/70 bg-black/90 backdrop-blur-md">
-      <nav className="mx-auto flex h-20 max-w-7xl items-center justify-center px-6">
+     <nav className="mx-auto flex h-14 max-w-7xl items-center justify-end px-6 md:h-20 md:justify-center">
         <button
           type="button"
           onClick={() => setIsOpen(!isOpen)}
-          className="ml-auto text-3xl text-white md:hidden"
+          className="text-4xl leading-none text-white md:hidden"
           aria-label="Open navigation menu"
         >
           ☰

@@ -48,8 +48,9 @@ export default function BooksPage() {
   </p>
 )}
 
-               <Link
-  href={book.amazon}
+              <Link
+  key={book.slug}
+  href={`/books/${book.slug}`}
   target="_blank"
   rel="noopener noreferrer"
  className="mt-5 block w-fit mx-auto rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"

@@ -38,6 +38,44 @@ export default function Home() {
           </div>
         </div>
       </section>
+      <section className="mx-auto max-w-7xl px-6 py-24">
+  <div className="mb-12 text-center">
+    <p className="text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
+      Featured Books
+    </p>
+
+    <h2 className="mt-4 text-4xl font-bold">
+      Start Your Next Obsession
+    </h2>
+
+    <p className="mx-auto mt-4 max-w-2xl text-zinc-400">
+      Protective heroes. Impossible choices. Unforgettable romance.
+    </p>
+  </div>
+
+  <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+    {[1, 2, 3, 4].map((book) => (
+      <div
+        key={book}
+        className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/40 transition duration-300 hover:border-[#ff2f8f] hover:-translate-y-1"
+      >
+        <div className="aspect-[2/3] bg-zinc-800" />
+
+        <div className="p-5">
+          <h3 className="text-lg font-semibold">Book Title</h3>
+
+          <p className="mt-2 text-sm text-zinc-400">
+            MM Romance • Kindle Unlimited
+          </p>
+
+          <button className="mt-5 rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black">
+            View Book
+          </button>
+        </div>
+      </div>
+    ))}
+  </div>
+</section>
     </main>
   );
 }

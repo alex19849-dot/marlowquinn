@@ -13,3 +13,17 @@ export const books = [
     ku: true,
   },
 ];
+{
+  slug: "cold-as-puck",
+  title: "Cold As Puck",
+  subgenre: "Sports Romance",
+  tropes: [
+    "Enemies to Lovers",
+    "College Hockey",
+    "Rivals",
+    "Slow Burn"
+  ],
+  cover: "/covers/cold-as-puck.jpg",
+  amazon: "https://www.amazon.com/dp/B0H1JLJ8LC",
+  ku: true,
+},

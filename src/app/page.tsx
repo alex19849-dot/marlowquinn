@@ -58,9 +58,9 @@ export default function Home() {
   </div>
 
   <div className="grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-    {[1, 2, 3, 4].map((book) => (
+    {books.slice(0, 4).map((book) => (
       <div
-        key={book}
+        key={book.slug}
         className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/40 transition duration-300 hover:border-[#ff2f8f] hover:-translate-y-1"
       >
         <div className="aspect-[2/3] bg-zinc-800" />

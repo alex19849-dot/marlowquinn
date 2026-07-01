@@ -29,6 +29,9 @@ export default async function BookPage({ params }: BookPageProps) {
     );
   }
 
+  const hasBlurb = "blurb" in book;
+  const hasContentWarnings = "contentWarnings" in book;
+
   return (
     <main className="min-h-screen bg-[#050505] px-6 py-12 text-white">
       <section className="mx-auto grid max-w-6xl gap-10 lg:grid-cols-[380px_1fr]">
@@ -64,16 +67,13 @@ export default async function BookPage({ params }: BookPageProps) {
               Kindle Unlimited
             </p>
           )}
-{"blurb" in book && (
-  <p className="mt-6 max-w-2xl text-base leading-8 text-zinc-300">
-    {book.blurb}
-  </p>
-)}
-          {"blurb" in book && (
-  <p className="mt-6 max-w-2xl text-base leading-8 text-zinc-300">
-    {book.blurb}
-  </p>
-)}
+
+          {hasBlurb && (
+            <p className="mt-6 max-w-2xl text-base leading-8 text-zinc-300">
+              {book.blurb}
+            </p>
+          )}
+
           <div className="mt-6 flex flex-wrap gap-2">
             {book.tropes.map((trope) => (
               <span
@@ -84,6 +84,25 @@ export default async function BookPage({ params }: BookPageProps) {
               </span>
             ))}
           </div>
+
+          {hasContentWarnings && (
+            <div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-5">
+              <h2 className="text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]">
+                Content Warnings
+              </h2>
+
+              <div className="mt-4 flex flex-wrap gap-2">
+                {book.contentWarnings.map((warning) => (
+                  <span
+                    key={warning}
+                    className="rounded-full bg-black px-4 py-2 text-sm text-zinc-300"
+                  >
+                    {warning}
+                  </span>
+                ))}
+              </div>
+            </div>
+          )}
 
           <Link
             href={book.amazon}

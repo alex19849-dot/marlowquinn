@@ -103,6 +103,7 @@ export const books = [
     title: "Lost And Found",
     subgenre: "Romantic Thriller",
     blurb: "Luca Reyes has spent years searching for answers. Dante Russo has spent years making problems disappear. Neither expects their lives to collide, but once they do, the truth becomes dangerous, the attraction becomes impossible to ignore, and surviving may depend on trusting the one man who could ruin everything.",
+    contentWarnings: ["Violence", "Danger", "Explicit MM romance", "Child Trafficking"],
     tropes: ["Missing Persons", "Forced Partnership", "Slow Burn", "Action & Suspense"],
     cover: "/covers/lost-and-found.jpg",
     amazon: "https://www.amazon.com/dp/B0H3HSKP9K",

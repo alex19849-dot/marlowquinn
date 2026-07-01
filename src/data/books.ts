@@ -27,3 +27,143 @@ export const books = [
   amazon: "https://www.amazon.com/dp/B0H1JLJ8LC",
   ku: true,
 },
+{
+  slug: "no-clean-lines",
+  title: "No Clean Lines",
+  subgenre: "Romantic Thriller",
+  tropes: [
+    "Enemies to Lovers",
+    "FBI Partners",
+    "Serial Killer",
+    "Possessive Hero"
+  ],
+  cover: "/covers/no-clean-lines.jpg",
+  amazon: "https://www.amazon.com/dp/B0H2BHVB91",
+  ku: true,
+},
+    {
+  slug: "under-pressure",
+  title: "Under Pressure",
+  subgenre: "Sports Romance",
+  tropes: [
+    "College Football",
+    "Forbidden Romance",
+    "Teammates",
+    "Slow Burn"
+  ],
+  cover: "/covers/under-pressure.jpg",
+  amazon: "https://www.amazon.com/dp/B0H2JMKFQQ",
+  ku: true,
+},
+    {
+  slug: "off-limits",
+  title: "Off Limits",
+  subgenre: "College Romance",
+  tropes: [
+    "Forbidden Romance",
+    "Rich Boy",
+    "Slow Burn",
+    "Opposites Attract"
+  ],
+  cover: "/covers/off-limits.jpg",
+  amazon: "https://www.amazon.com/dp/B0H34M7WXH",
+  ku: true,
+},
+    {
+  slug: "house-rules",
+  title: "House Rules",
+  subgenre: "College Hockey Romance",
+  tropes: [
+    "Stepbrothers",
+    "Enemies to Lovers",
+    "Forced Proximity",
+    "Possessive Hero"
+  ],
+  cover: "/covers/house-rules.jpg",
+  amazon: "https://www.amazon.com/dp/B0GX31HHP1",
+  ku: true,
+},
+   {
+  slug: "mine",
+  title: "Mine",
+  subgenre: "Paranormal Romance",
+  tropes: [
+    "Fated Mates",
+    "Werewolves",
+    "Possessive Alpha",
+    "Forbidden Love"
+  ],
+  cover: "/covers/mine.jpg",
+  amazon: "https://www.amazon.com/dp/B0H2R6LXQ3",
+  ku: true,
+},
+    {
+  slug: "reapers-claim",
+  title: "Reaper's Claim",
+  subgenre: "Motorcycle Club Romance",
+  tropes: [
+    "Found Family",
+    "Motorcycle Club",
+    "Possessive Hero",
+    "Action & Suspense"
+  ],
+  cover: "/covers/reapers-claim.jpg",
+  amazon: "https://www.amazon.com/dp/B0H4RHB1HW",
+  ku: true,
+},
+    {
+  slug: "executive-dysfunction",
+  title: "Executive Dysfunction",
+  subgenre: "Workplace Romance",
+  tropes: [
+    "ADHD Representation",
+    "Workplace Romance",
+    "Slow Burn",
+    "Found Family"
+  ],
+  cover: "/covers/executive-dysfunction.jpg",
+  amazon: "https://www.amazon.com/dp/B0H46SPH9M",
+  ku: true,
+},
+    {
+  slug: "borrow-my-calm",
+  title: "Borrow My Calm",
+  subgenre: "Sports Romance",
+  tropes: [
+    "Coach / Player",
+    "ADHD Representation",
+    "Forbidden Romance",
+    "Emotional Healing"
+  ],
+  cover: "/covers/borrow-my-calm.jpg",
+  amazon: "https://www.amazon.com/dp/B0H56V5DMM",
+  ku: true,
+},
+    {
+  slug: "trouble-like-you",
+  title: "Trouble Like You",
+  subgenre: "Contemporary Romance",
+  tropes: [
+    "Opposites Attract",
+    "Found Family",
+    "Slow Burn",
+    "Emotional Romance"
+  ],
+  cover: "/covers/trouble-like-you.jpg",
+  amazon: "https://www.amazon.com/dp/B0H66S4HHY",
+  ku: true,
+},
+    {
+  slug: "lost-and-found",
+  title: "Lost And Found",
+  subgenre: "Romantic Thriller",
+  tropes: [
+    "Missing Persons",
+    "Forced Partnership",
+    "Slow Burn",
+    "Action & Suspense"
+  ],
+  cover: "/covers/lost-and-found.jpg",
+  amazon: "https://www.amazon.com/dp/B0H3HSKP9K",
+  ku: true,
+},

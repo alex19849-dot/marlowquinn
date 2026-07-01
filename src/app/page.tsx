@@ -79,9 +79,12 @@ export default function Home() {
   {book.subgenre}
 </p>
 
-          <button className="mt-5 rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black">
-            View Book
-          </button>
+         <Link
+  href={book.amazon}
+  className="mt-5 inline-block rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
+>
+  View on Amazon
+</Link>
         </div>
       </div>
     ))}

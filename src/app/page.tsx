@@ -3,87 +3,57 @@ import Link from "next/link";
 import { books } from "@/data/books";
 
 export default function Home() {
+  const carouselBooks = [...books.slice(0, 6), ...books.slice(0, 6)];
+
   return (
-    <main className="bg-[#050505] text-white">
-      <section className="relative px-6 pb-8 pt-6 text-center">
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_top,rgba(255,47,143,0.16),transparent_32%)]" />
+    <main className="min-h-screen overflow-hidden bg-[#050505] px-6 py-10 text-white">
+      <section className="mx-auto flex max-w-7xl flex-col items-center text-center">
+        <p className="text-sm uppercase tracking-[0.4em] text-[#ff2f8f]">
+          Marlow Quinn Author
+        </p>
 
-        <div className="relative z-10 mx-auto max-w-5xl">
-          <Image
-            src="/marlow-logo.png"
-            alt="Marlow Quinn Author Logo"
-            width={900}
-            height={450}
-            priority
-            className="mx-auto w-full max-w-[260px] sm:max-w-[340px] lg:max-w-[420px]"
-          />
+        <h1 className="mt-4 max-w-3xl text-3xl font-bold leading-tight sm:text-5xl">
+          Emotional MM Romance with bite, heat, and heart.
+        </h1>
 
-          <p className="mx-auto mt-3 max-w-2xl text-lg leading-7 text-zinc-200 sm:text-xl">
-            Emotional MM Romance with bite, heat, and heart.
-          </p>
+        <div className="mt-10 w-full overflow-hidden">
+          <div className="flex w-max animate-[scrollBooks_35s_linear_infinite] gap-6">
+            {carouselBooks.map((book, index) => (
+              <Link
+                key={`${book.slug}-${index}`}
+                href={book.amazon}
+                className="w-[150px] shrink-0 sm:w-[190px] lg:w-[220px]"
+              >
+                <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50">
+                  <Image
+                    src={book.cover}
+                    alt={`${book.title} book cover`}
+                    width={400}
+                    height={600}
+                    className="aspect-[2/3] w-full object-cover"
+                  />
+                </div>
 
-          <div className="mt-5 flex flex-col justify-center gap-3 sm:flex-row">
-            <Link
-              href="/books"
-              className="rounded-full bg-[#ff2f8f] px-7 py-3 text-center font-semibold text-black"
-            >
-              Browse Books
-            </Link>
-
-            <Link
-              href="/newsletter"
-              className="rounded-full border border-zinc-700 px-7 py-3 text-center font-semibold text-white"
-            >
-              Join Newsletter
-            </Link>
+                <h2 className="mt-3 text-sm font-semibold">{book.title}</h2>
+              </Link>
+            ))}
           </div>
         </div>
-      </section>
 
-      <section className="mx-auto max-w-7xl px-6 pb-16 pt-4">
-        <div className="mb-6 flex items-end justify-between gap-4">
-          <div>
-            <p className="text-xs uppercase tracking-[0.35em] text-[#ff2f8f]">
-              Featured Books
-            </p>
-
-            <h2 className="mt-2 text-2xl font-bold sm:text-3xl">
-              Start Your Next Obsession
-            </h2>
-          </div>
-
+        <div className="mt-10 flex flex-col justify-center gap-4 sm:flex-row">
           <Link
             href="/books"
-            className="hidden text-sm font-semibold text-zinc-300 hover:text-[#ff2f8f] sm:block"
+            className="rounded-full bg-[#ff2f8f] px-8 py-3 font-semibold text-black"
           >
-            View all
+            Browse Books
           </Link>
-        </div>
 
-        <div className="flex gap-5 overflow-x-auto pb-4">
-          {books.slice(0, 6).map((book) => (
-            <Link
-              key={book.slug}
-              href={book.amazon}
-              className="group min-w-[150px] sm:min-w-[185px] lg:min-w-[210px]"
-            >
-              <div className="overflow-hidden rounded-xl border border-zinc-800 bg-zinc-900/50 transition duration-300 group-hover:-translate-y-1 group-hover:border-[#ff2f8f]">
-                <Image
-                  src={book.cover}
-                  alt={`${book.title} book cover`}
-                  width={400}
-                  height={600}
-                  className="aspect-[2/3] w-full object-cover"
-                />
-              </div>
-
-              <h3 className="mt-3 text-sm font-semibold sm:text-base">
-                {book.title}
-              </h3>
-
-              <p className="mt-1 text-xs text-zinc-400">{book.subgenre}</p>
-            </Link>
-          ))}
+          <Link
+            href="/newsletter"
+            className="rounded-full border border-zinc-700 px-8 py-3 font-semibold text-white"
+          >
+            Join Newsletter
+          </Link>
         </div>
       </section>
     </main>

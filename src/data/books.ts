@@ -9,7 +9,7 @@ export const books = [
       "Found Family"
     ],
     cover: "/covers/after-sunset.jpg",
-    amazon: "#",
+   amazon: "https://www.amazon.co.uk/dp/B0H5XDSB9N",
     ku: true,
   },
 ];

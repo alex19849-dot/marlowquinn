@@ -90,7 +90,47 @@ export default async function BookPage({ params }: BookPageProps) {
               <h2 className="text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]">
                 Content Warnings
               </h2>
+<div className="mt-8 rounded-2xl border border-zinc-800 bg-zinc-900/40 p-6">
+  <h2 className="text-sm font-semibold uppercase tracking-[0.25em] text-[#ff2f8f]">
+    Book Details
+  </h2>
 
+  <div className="mt-5 grid gap-4 sm:grid-cols-2">
+    <div>
+      <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+        Genre
+      </p>
+      <p className="mt-1 text-white">{book.subgenre}</p>
+    </div>
+
+    {"heat" in book && (
+      <div>
+        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+          Heat
+        </p>
+        <p className="mt-1 text-[#ff2f8f]">{book.heat}</p>
+      </div>
+    )}
+
+    {"length" in book && (
+      <div>
+        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+          Length
+        </p>
+        <p className="mt-1 text-white">{book.length}</p>
+      </div>
+    )}
+
+    {"ending" in book && (
+      <div>
+        <p className="text-xs uppercase tracking-[0.2em] text-zinc-500">
+          Ending
+        </p>
+        <p className="mt-1 text-white">{book.ending}</p>
+      </div>
+    )}
+  </div>
+</div>
               <div className="mt-4 flex flex-wrap gap-2">
                 {book.contentWarnings?.map((warning) => (
                   <span

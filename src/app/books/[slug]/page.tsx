@@ -3,13 +3,15 @@ import Link from "next/link";
 import { books } from "@/data/books";
 
 type BookPageProps = {
-  params: {
+  params: Promise<{
     slug: string;
-  };
+  }>;
 };
 
-export default function BookPage({ params }: BookPageProps) {
-  const book = books.find((item) => item.slug === params.slug);
+export default async function BookPage({ params }: BookPageProps) {
+  const { slug } = await params;
+
+  const book = books.find((item) => item.slug === slug);
 
   if (!book) {
     return (

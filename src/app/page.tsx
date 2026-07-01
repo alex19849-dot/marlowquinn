@@ -15,7 +15,7 @@ export default function Home() {
             width={900}
             height={450}
             priority
-            className="mx-auto w-full max-w-3xl"
+           className="mx-auto w-full max-w-2xl lg:max-w-[700px]"
           />
 
           <p className="mt-8 text-xl text-zinc-200 sm:text-2xl">

@@ -63,8 +63,13 @@ export default function Home() {
         key={book.slug}
         className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/40 transition duration-300 hover:border-[#ff2f8f] hover:-translate-y-1"
       >
-        <div className="aspect-[2/3] bg-zinc-800" />
-
+      <Image
+  src={book.cover}
+  alt={`${book.title} book cover`}
+  width={400}
+  height={600}
+  className="aspect-[2/3] w-full object-cover"
+/>
         <div className="p-5">
        <h3 className="text-lg font-semibold">
   {book.title}

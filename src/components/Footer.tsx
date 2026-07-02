@@ -10,6 +10,7 @@ export default function Footer() {
           <Link
             href="https://www.facebook.com/MarlowQuinn"
             target="_blank"
+            rel="noopener noreferrer"
             aria-label="Facebook"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
@@ -19,6 +20,7 @@ export default function Footer() {
           <Link
             href="https://www.bookbub.com/profile/marlow-quinn"
             target="_blank"
+            rel="noopener noreferrer"
             aria-label="BookBub"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
@@ -28,6 +30,7 @@ export default function Footer() {
           <Link
             href="https://www.tiktok.com/@marlow.quinn"
             target="_blank"
+            rel="noopener noreferrer"
             aria-label="TikTok"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >

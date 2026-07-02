@@ -6,9 +6,9 @@ export default function Footer() {
   return (
     <footer className="mt-20 border-t border-zinc-800">
       <div className="mx-auto max-w-7xl px-6 py-8">
-        <div className="flex justify-center gap-6">
+       <div className="flex justify-center gap-10">
           <Link
-            href="YOUR_FACEBOOK_URL"
+            href="https://www.facebook.com/MarlowQuinn"
             target="_blank"
             aria-label="Facebook"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
@@ -17,7 +17,7 @@ export default function Footer() {
           </Link>
 
           <Link
-            href="YOUR_BOOKBUB_URL"
+            href="https://www.bookbub.com/profile/marlow-quinn"
             target="_blank"
             aria-label="BookBub"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
@@ -26,7 +26,7 @@ export default function Footer() {
           </Link>
 
           <Link
-            href="YOUR_TIKTOK_URL"
+            href="https://www.tiktok.com/@marlow.quinn"
             target="_blank"
             aria-label="TikTok"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
@@ -35,7 +35,7 @@ export default function Footer() {
           </Link>
         </div>
 
-        <p className="mt-6 text-center text-sm text-zinc-500">
+        <p className="mt-8 text-center text-sm tracking-wide text-zinc-500">
           © 2026 Marlow Quinn. All rights reserved.
         </p>
       </div>

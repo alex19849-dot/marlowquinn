@@ -152,7 +152,7 @@ export default async function BookPage({ params }: BookPageProps) {
             href={book.amazon}
             target="_blank"
             rel="noopener noreferrer"
-            className="mt-8 inline-block rounded-full bg-[#ff2f8f] px-8 py-3 font-semibold text-black"
+            className="mt-8 block w-fit rounded-full bg-[#ff2f8f] px-8 py-3 font-semibold text-black mx-auto lg:mx-0"
           >
             View on Amazon
           </Link>

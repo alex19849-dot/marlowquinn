@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
+import Footer from "@/components/Footer";
 
 export const metadata: Metadata = {
   title: "Marlow Quinn",
@@ -17,6 +18,7 @@ export default function RootLayout({
       <body className="bg-[#050505] text-white antialiased">
         <Navbar />
         {children}
+        <Footer />
       </body>
     </html>
   );

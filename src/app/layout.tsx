@@ -71,6 +71,31 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#050505] text-white antialiased">
+  <script
+    type="application/ld+json"
+    dangerouslySetInnerHTML={{
+      __html: JSON.stringify({
+        "@context": "https://schema.org",
+        "@type": "Person",
+        name: "Marlow Quinn",
+        url: "https://www.marlowquinn.com",
+        image: "https://www.marlowquinn.com/marlow-logo.png",
+        sameAs: [
+          "https://www.facebook.com/MarlowQuinn",
+          "https://www.bookbub.com/profile/marlow-quinn",
+          "https://www.tiktok.com/@marlow.quinn"
+        ],
+        jobTitle: "Author",
+        description:
+          "Author of emotional MM romance featuring sports romance, paranormal romance, romantic suspense, found family, forbidden attraction, and high-heat happily-ever-afters.",
+      }),
+    }}
+  />
+
+  <Navbar />
+  {children}
+  <Footer />
+</body>
         <Navbar />
         {children}
         <Footer />

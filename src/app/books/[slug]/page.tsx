@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { books } from "@/data/books";
@@ -7,7 +8,49 @@ type BookPageProps = {
     slug: string;
   }>;
 };
+export async function generateMetadata({
+  params,
+}: BookPageProps): Promise<Metadata> {
+  const { slug } = await params;
+  const book = books.find((item) => item.slug === slug);
 
+  if (!book) {
+    return {
+      title: "Book Not Found",
+      description: "This Marlow Quinn book could not be found.",
+    };
+  }
+
+  const description =
+    "blurb" in book
+      ? book.blurb
+      : `${book.title} by Marlow Quinn. Emotional MM romance available on Kindle Unlimited.`;
+
+  return {
+    title: book.title,
+    description,
+    openGraph: {
+      title: `${book.title} | Marlow Quinn`,
+      description,
+      type: "book",
+      url: `/books/${book.slug}`,
+      images: [
+        {
+          url: book.cover,
+          width: 400,
+          height: 600,
+          alt: `${book.title} book cover`,
+        },
+      ],
+    },
+    twitter: {
+      card: "summary_large_image",
+      title: `${book.title} | Marlow Quinn`,
+      description,
+      images: [book.cover],
+    },
+  };
+}
 export default async function BookPage({ params }: BookPageProps) {
   const { slug } = await params;
   const book = books.find((item) => item.slug === slug);

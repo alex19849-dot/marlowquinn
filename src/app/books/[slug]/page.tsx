@@ -22,10 +22,9 @@ export async function generateMetadata({
   }
 
   const description =
-    "blurb" in book
-      ? book.blurb
-      : `${book.title} by Marlow Quinn. Emotional MM romance available on Kindle Unlimited.`;
-
+  "blurb" in book
+    ? book.blurb
+    : "Emotional MM romance by Marlow Quinn, available on Kindle Unlimited.";
   return {
     title: book.title,
     description,

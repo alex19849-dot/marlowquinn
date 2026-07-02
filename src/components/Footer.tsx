@@ -11,7 +11,7 @@ export default function Footer() {
             href="YOUR_FACEBOOK_URL"
             target="_blank"
             aria-label="Facebook"
-            className="text-zinc-500 transition-colors duration-300 hover:text-[#ff2f8f]"
+            className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
             <FaFacebookF size={20} />
           </Link>
@@ -20,7 +20,7 @@ export default function Footer() {
             href="YOUR_BOOKBUB_URL"
             target="_blank"
             aria-label="BookBub"
-            className="text-zinc-500 transition-colors duration-300 hover:text-[#ff2f8f]"
+            className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
             <SiBookbub size={20} />
           </Link>
@@ -29,7 +29,7 @@ export default function Footer() {
             href="YOUR_TIKTOK_URL"
             target="_blank"
             aria-label="TikTok"
-            className="text-zinc-500 transition-colors duration-300 hover:text-[#ff2f8f]"
+            className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
             <FaTiktok size={20} />
           </Link>

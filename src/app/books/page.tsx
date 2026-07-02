@@ -2,6 +2,14 @@ import Image from "next/image";
 import Link from "next/link";
 import { books } from "@/data/books";
 
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Books",
+  description:
+    "Browse Marlow Quinn's full catalogue of emotional MM romance, including sports romance, paranormal romance, romantic suspense, college romance, Kindle Unlimited reads, and high-heat happily-ever-afters.",
+};
+
 export default function BooksPage() {
   return (
     <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">

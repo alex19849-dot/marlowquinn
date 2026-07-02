@@ -31,14 +31,8 @@ export const metadata: Metadata = {
     "Romantic suspense",
   ],
 
-  authors: [
-    {
-      name: "Marlow Quinn",
-    },
-  ],
-
+  authors: [{ name: "Marlow Quinn" }],
   creator: "Marlow Quinn",
-
   publisher: "Marlow Quinn",
 
   alternates: {
@@ -47,8 +41,7 @@ export const metadata: Metadata = {
 
   openGraph: {
     title: "Marlow Quinn | Emotional MM Romance",
-    description:
-      "Dark, emotional MM romance with bite, heat, and heart.",
+    description: "Dark, emotional MM romance with bite, heat, and heart.",
     url: "https://www.marlowquinn.com",
     siteName: "Marlow Quinn",
     locale: "en_GB",
@@ -58,8 +51,7 @@ export const metadata: Metadata = {
   twitter: {
     card: "summary_large_image",
     title: "Marlow Quinn",
-    description:
-      "Dark, emotional MM romance with bite, heat, and heart.",
+    description: "Dark, emotional MM romance with bite, heat, and heart.",
   },
 };
 
@@ -68,34 +60,32 @@ export default function RootLayout({
 }: Readonly<{
   children: React.ReactNode;
 }>) {
+  const authorSchema = {
+    "@context": "https://schema.org",
+    "@type": "Person",
+    name: "Marlow Quinn",
+    url: "https://www.marlowquinn.com",
+    image: "https://www.marlowquinn.com/marlow-logo.png",
+    sameAs: [
+      "https://www.facebook.com/MarlowQuinn",
+      "https://www.bookbub.com/profile/marlow-quinn",
+      "https://www.tiktok.com/@marlow.quinn",
+    ],
+    jobTitle: "Author",
+    description:
+      "Author of emotional MM romance featuring sports romance, paranormal romance, romantic suspense, found family, forbidden attraction, and high-heat happily-ever-afters.",
+  };
+
   return (
     <html lang="en">
       <body className="bg-[#050505] text-white antialiased">
-  <script
-    type="application/ld+json"
-    dangerouslySetInnerHTML={{
-      __html: JSON.stringify({
-        "@context": "https://schema.org",
-        "@type": "Person",
-        name: "Marlow Quinn",
-        url: "https://www.marlowquinn.com",
-        image: "https://www.marlowquinn.com/marlow-logo.png",
-        sameAs: [
-          "https://www.facebook.com/MarlowQuinn",
-          "https://www.bookbub.com/profile/marlow-quinn",
-          "https://www.tiktok.com/@marlow.quinn"
-        ],
-        jobTitle: "Author",
-        description:
-          "Author of emotional MM romance featuring sports romance, paranormal romance, romantic suspense, found family, forbidden attraction, and high-heat happily-ever-afters.",
-      }),
-    }}
-  />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify(authorSchema),
+          }}
+        />
 
-  <Navbar />
-  {children}
-  <Footer />
-</body>
         <Navbar />
         {children}
         <Footer />

@@ -13,7 +13,7 @@ export default function Footer() {
             aria-label="Facebook"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
-            <FaFacebookF size={20} />
+            <FaFacebookF size={24} />
           </Link>
 
           <Link
@@ -22,7 +22,7 @@ export default function Footer() {
             aria-label="BookBub"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
-            <SiBookbub size={20} />
+            <SiBookbub size={24} />
           </Link>
 
           <Link
@@ -31,7 +31,7 @@ export default function Footer() {
             aria-label="TikTok"
             className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
           >
-            <FaTiktok size={20} />
+            <FaTiktok size={24} />
           </Link>
         </div>
 

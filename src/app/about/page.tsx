@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import Link from "next/link";
-
+export const metadata: Metadata = {
+  title: "About",
+  description:
+    "Learn more about Marlow Quinn, author of dark, emotional, high-heat MM romance with found family, forbidden attraction, romantic suspense, sports romance, and hard-won happily-ever-afters.",
+};
 export default function AboutPage() {
   return (
     <main className="min-h-screen bg-[#050505] text-white">

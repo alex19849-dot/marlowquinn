@@ -55,8 +55,32 @@ export default async function BookPage({ params }: BookPageProps) {
   const book = books.find((item) => item.slug === slug);
 
   if (!book) {
-    return (
-      <main className="min-h-screen bg-[#050505] px-6 py-16 text-white">
+    const bookSchema = {
+  "@context": "https://schema.org",
+  "@type": "Book",
+  name: book.title,
+  author: {
+    "@type": "Person",
+    name: "Marlow Quinn",
+  },
+  genre: book.subgenre,
+  image: `https://www.marlowquinn.com${book.cover}`,
+  url: `https://www.marlowquinn.com/books/${book.slug}`,
+  sameAs: book.amazon,
+  description:
+    "blurb" in book
+      ? book.blurb
+      : "Emotional MM romance by Marlow Quinn.",
+};
+
+return (
+  <main className="min-h-screen bg-[#050505] px-6 py-12 text-white">
+    <script
+      type="application/ld+json"
+      dangerouslySetInnerHTML={{
+        __html: JSON.stringify(bookSchema),
+      }}
+    />
         <section className="mx-auto max-w-4xl text-center">
           <h1 className="text-4xl font-bold">Book not found</h1>
           <Link

@@ -26,7 +26,7 @@ export async function POST(request: Request) {
       },
       body: JSON.stringify({
         email,
-        groups: [],
+        groups: [process.env.MAILERLITE_GROUP_ID],
       }),
     });
 

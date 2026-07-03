@@ -57,10 +57,11 @@ export const metadata: Metadata = {
   },
 
   twitter: {
-    card: "summary_large_image",
-    title: "Marlow Quinn",
-    description: "Dark, emotional MM romance with bite, heat, and heart.",
-  },
+  card: "summary_large_image",
+  title: "Marlow Quinn | Emotional MM Romance",
+  description: "Dark, emotional MM romance with bite, heat, and heart.",
+  images: ["/og-image.jpg"],
+},
 };
 
 export default function RootLayout({

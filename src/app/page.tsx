@@ -3,7 +3,23 @@ import Link from "next/link";
 import { books } from "@/data/books";
 
 export default function Home() {
-  const carouselBooks = [...books.slice(0, 6), ...books.slice(0, 6)];
+  const featuredSlugs = [
+    "borrow-my-calm",
+    "trouble-like-you",
+    "executive-dysfunction",
+    "after-sunset",
+    "lost",
+    "mine",
+  ];
+
+  const carouselBooks = [
+    ...featuredSlugs.map(
+      (slug) => books.find((book) => book.slug === slug)!
+    ),
+    ...featuredSlugs.map(
+      (slug) => books.find((book) => book.slug === slug)!
+    ),
+  ];
 
   return (
    <main className="h-[calc(100vh-80px)] overflow-hidden bg-[#050505] px-4 py-4 text-white sm:px-6 sm:py-6">

@@ -9,7 +9,7 @@ export default function Home() {
     "executive-dysfunction",
     "after-sunset",
     "lost-and-found",
-    "thee-captains-rule",
+    "the-captains-rule",
   ];
 
   const carouselBooks = [

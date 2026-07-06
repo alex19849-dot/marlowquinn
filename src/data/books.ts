@@ -268,7 +268,7 @@ ending: "HEA",
     title: "The Captain's Rule",
     subgenre: "Sports Romance",
     blurb:
-  "University of Michigan hockey has one rule. Win.
+  `University of Michigan hockey has one rule. Win.
 
 For four years, team captain Rowan Jones has lived by discipline, leadership, and control. With NHL scouts watching his every move, his final season is about one thing, leaving behind a championship legacy.
 
@@ -284,7 +284,7 @@ Every argument leaves them wanting something they refuse to admit.
 
 As the biggest season of their lives unfolds, rivalry turns into obsession, frustration into desire, and stolen moments become impossible to ignore. But with the Frozen Four approaching, NHL dreams hanging in the balance, and an entire university watching, choosing each other could cost them everything they've worked for.
 
-The Captain's Rule is a high-heat MM college hockey romance featuring rivals to lovers, forced proximity, roommates, possessive tension, found family, emotional vulnerability, sharp banter, and a guaranteed happily ever after.",
+The Captain's Rule is a high-heat MM college hockey romance featuring rivals to lovers, forced proximity, roommates, possessive tension, found family, emotional vulnerability, sharp banter, and a guaranteed happily ever after.`,
 
 contentWarnings: [
   "Strong language",

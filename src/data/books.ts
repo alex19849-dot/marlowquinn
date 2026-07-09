@@ -302,4 +302,39 @@ ending: "HEA",
     amazon: "https://www.amazon.com/dp/B0H7Q1Y1DL",
     ku: true,
   },
+
+ slug: "coach-curious",
+    title: "Coach Curious",
+    subgenre: "College Romance",
+    blurb:
+  `Rayne Keen thought moving to Ashford College would save his marriage.
+
+Instead, it introduced him to the man next door.
+
+Bryn Price is a biology professor, happily approachable, endlessly patient, and unlike anyone Rayne has ever known. What begins as neighbourly beers and easy conversation soon turns into an unexpected friendship, one built on trust, honesty and questions Rayne never imagined asking.
+
+One biology lecture changes everything.
+
+As curiosity grows into attraction, and attraction into something neither man can ignore, they're forced to confront marriages that have been quietly falling apart for years. But crossing that line could cost them everything they've built.
+
+Some discoveries change your life.
+
+Others reveal who you were all along.`,
+
+contentWarnings: [
+  "Strong language",
+  "Cheating",
+  "Divorce",
+  "Secrecy",
+  "Explicit MM romance"
+],
+
+heat: "★★★★★",
+length: "Full Length Novel",
+ending: "HEA",
+    ["Neighbours to Lovers", "Gay Awakening", "Professor Romance", "Medium Burn", "High Spice"]
+    cover: "/covers/coach-curious.jpg",
+    ku: true,
+  },
+  
 ];

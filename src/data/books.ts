@@ -304,10 +304,9 @@ ending: "HEA",
   },
 
  slug: "coach-curious",
-    title: "Coach Curious",
-    subgenre: "College Romance",
-    blurb:
-  `Rayne Keen thought moving to Ashford College would save his marriage.
+title: "Coach Curious",
+subgenre: "College Romance",
+blurb: `Rayne Keen thought moving to Ashford College would save his marriage.
 
 Instead, it introduced him to the man next door.
 
@@ -326,15 +325,23 @@ contentWarnings: [
   "Cheating",
   "Divorce",
   "Secrecy",
-  "Explicit MM romance"
+  "Explicit MM romance",
 ],
 
 heat: "★★★★★",
 length: "Full Length Novel",
 ending: "HEA",
-    ["Neighbours to Lovers", "Gay Awakening", "Professor Romance", "Medium Burn", "High Spice"]
-    cover: "/covers/coach-curious.jpg",
-    ku: true,
+
+tropes: [
+  "Neighbours to Lovers",
+  "Gay Awakening",
+  "Professor Romance",
+  "Medium Burn",
+  "High Spice",
+],
+
+cover: "/covers/coach-curious.jpg",
+ku: true,
   },
   
 ];

@@ -302,5 +302,5 @@ ending: "HEA",
     amazon: "https://www.amazon.com/dp/B0H7Q1Y1DL",
     ku: true,
   },
-{
+];
   

@@ -8,7 +8,7 @@ export default function Home() {
     "trouble-like-you",
     "executive-dysfunction",
     "after-sunset",
-    "lost-and-found",
+    "coach-curious",
     "the-captains-rule",
   ];
 

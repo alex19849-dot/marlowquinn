@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { FaFacebookF, FaTiktok } from "react-icons/fa";
+import { FaFacebookF, FaTiktok, FaGoodreadsG } from "react-icons/fa";
 import { SiBookbub } from "react-icons/si";
 
 export default function Footer() {
@@ -17,6 +17,16 @@ export default function Footer() {
             <FaFacebookF size={24} />
           </Link>
 
+          <Link
+  href="https://www.goodreads.com/author/show/71132375.Marlow_Quinn"
+  target="_blank"
+  rel="noopener noreferrer"
+  aria-label="Goodreads"
+  className="text-[#ff2f8f] transition-colors duration-300 hover:text-white"
+>
+  <FaGoodreadsG size={24} />
+</Link>
+          
           <Link
             href="https://www.bookbub.com/profile/marlow-quinn"
             target="_blank"

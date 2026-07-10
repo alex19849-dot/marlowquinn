@@ -7,7 +7,7 @@ export default function Home() {
     "borrow-my-calm",
     "trouble-like-you",
     "executive-dysfunction",
-    "after-sunset",
+    "coach-curious",
     "lost-and-found",
     "the-captains-rule",
   ];

@@ -1,5 +1,46 @@
 export const books = [
   {
+    slug: "after-class",
+    title: "After Class",
+    subgenre: "College Romance",
+    blurb: `Grey Danvers has spent years living by the rules. Then he discovers his husband's betrayal and makes one reckless choice with a captivating stranger.
+
+By morning, Chase is gone.
+
+By Monday, he is sitting in Grey's classroom.
+
+Twenty-three-year-old Chase Mitchell has enough to manage between college, football, and helping at his family's garage. Falling for his professor definitely isn't part of the plan. But what began as one unforgettable night refuses to stay in the past.
+
+Every stolen moment pulls them closer. Every secret raises the stakes.
+
+Grey knows their relationship could destroy the career he has built. Chase knows loving Grey means accepting complications neither of them can control. When secrecy begins affecting Chase's education and Grey's past threatens to reclaim him, desire is no longer their greatest risk.
+
+They must decide whether protecting their relationship means hiding it or finally fighting for it.
+
+After Class is a high-heat contemporary MM romance featuring a forbidden professor-student relationship, an age gap, emotional healing, ADHD representation, difficult choices, and a hard-won happily ever after.`,
+    contentWarnings: [
+      "Strong language",
+      "Professor / Student relationship",
+      "Power imbalance",
+      "Divorce and infidelity themes",
+      "Financial manipulation",
+      "Explicit MM romance",
+    ],
+    heat: "★★★★★",
+    length: "Full Length Novel",
+    ending: "HEA",
+    tropes: [
+      "Professor / Student",
+      "Age Gap",
+      "Forbidden Romance",
+      "ADHD Representation",
+      "High Spice",
+    ],
+    cover: "/covers/after-class.jpg",
+    amazon: "https://www.amazon.com/dp/B0HJFGSHHQ",
+    ku: true,
+  },
+  {
     slug: "fault-line-friction",
     title: "Fault Line Friction",
     subgenre: "College Sports Romance",

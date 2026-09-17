@@ -2,75 +2,79 @@ import Image from "next/image";
 import Link from "next/link";
 import { books } from "@/data/books";
 
-export default function Home() {
-  const featuredSlugs = [
-    "the-long-way-back",
-    "after-class",
-    "fault-line-friction",
-    "borrow-my-calm",
-    "trouble-like-you",
-    "executive-dysfunction",
-    "coach-curious",
-  ];
+import type { Metadata } from "next";
 
-  const carouselBooks = [
-    ...featuredSlugs.map((slug) => books.find((book) => book.slug === slug)!),
-    ...featuredSlugs.map((slug) => books.find((book) => book.slug === slug)!),
-  ];
+export const metadata: Metadata = {
+  title: "Books",
+  description:
+    "Browse Marlow Quinn's full catalogue of emotional MM romance, including sports romance, paranormal romance, romantic suspense, college romance, Kindle Unlimited reads, and high-heat happily-ever-afters.",
+};
 
+export default function BooksPage() {
   return (
-    <main className="h-[calc(100vh-80px)] overflow-hidden bg-[#050505] px-4 py-4 text-white sm:px-6 sm:py-6">
-      <section className="mx-auto flex max-w-7xl flex-col items-center text-center">
-        <h1 className="text-3xl font-bold uppercase tracking-[0.22em] text-white sm:text-5xl">
-          Marlow Quinn
+    <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
+      <section className="mx-auto max-w-7xl">
+        <p className="mb-4 text-center text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
+          Marlow Quinn Books
+        </p>
+
+        <h1 className="text-center text-4xl font-bold sm:text-6xl">
+          Books
         </h1>
 
-        <p className="mt-2 text-xs uppercase tracking-[0.45em] text-[#ff2f8f]">
-          Author
+        <p className="mx-auto mt-6 max-w-2xl text-center text-zinc-400">
+          Dark, emotional MM romance with heat, tension, found family, and
+          happily-ever-afters worth fighting for.
         </p>
 
-        <p className="mx-auto mt-4 max-w-xl text-base leading-6 text-zinc-300 sm:text-lg">
-          Emotional MM Romance with bite, heat, and heart.
-        </p>
-
-        <div className="mt-6 w-full overflow-hidden">
-          <div className="flex w-max animate-[scrollBooks_35s_linear_infinite] gap-6">
-            {carouselBooks.map((book, index) => (
-              <Link
-                key={`${book.slug}-${index}`}
-                href={`/books/${book.slug}`}
-                className="w-[150px] shrink-0 sm:w-[190px] lg:w-[220px]"
-              >
-                <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50">
-                  <Image
-                    src={book.cover}
-                    alt={`${book.title} book cover`}
-                    width={400}
-                    height={600}
-                    className="aspect-[2/3] w-full object-cover"
-                  />
-                </div>
-
-                <h2 className="mt-3 text-sm font-semibold">{book.title}</h2>
+        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
+          {books.map((book) => (
+            <div
+              key={book.slug}
+              className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/40 transition duration-300 hover:-translate-y-1 hover:border-[#ff2f8f]"
+            >
+              <Link href={`/books/${book.slug}`} className="block">
+                <Image
+                  src={book.cover}
+                  alt={`${book.title} book cover`}
+                  width={400}
+                  height={600}
+                  className="aspect-[2/3] w-full object-cover"
+                />
               </Link>
-            ))}
-          </div>
-        </div>
 
-        <div className="mt-5 flex flex-row justify-center gap-3">
-          <Link
-            href="/books"
-            className="rounded-full bg-[#ff2f8f] px-6 py-3 text-sm font-semibold text-black sm:px-8 sm:text-base"
-          >
-            Browse Books
-          </Link>
+              <div className="p-5 text-center">
+                <Link href={`/books/${book.slug}`}>
+                  <h2 className="text-lg font-semibold hover:text-[#ff2f8f]">
+                    {book.title}
+                  </h2>
+                </Link>
 
-          <Link
-            href="/newsletter"
-            className="rounded-full border border-zinc-700 px-6 py-3 text-sm font-semibold text-white sm:px-8 sm:text-base"
-          >
-            Join Newsletter
-          </Link>
+                <p className="mt-2 text-sm text-zinc-400">
+                  {book.subgenre}
+                </p>
+
+                <p className="mt-3 text-sm leading-6 text-zinc-500">
+                  {book.tropes.join(" • ")}
+                </p>
+
+                {book.ku && (
+                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#ff2f8f]">
+                    Kindle Unlimited
+                  </p>
+                )}
+
+                <Link
+                  href={book.amazon}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="mx-auto mt-5 block w-fit rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
+                >
+                  View on Amazon
+                </Link>
+              </div>
+            </div>
+          ))}
         </div>
       </section>
     </main>

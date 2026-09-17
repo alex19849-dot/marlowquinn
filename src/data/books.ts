@@ -1,5 +1,47 @@
 export const books = [
   {
+    slug: "the-long-way-back",
+    title: "The Long Way Back",
+    subgenre: "Romantic Suspense",
+    blurb: `Luke walked away from Boston years ago and let his closest friendship fade into occasional messages and half-hearted birthday reactions.
+
+Now he's back for a wedding, newly single and expecting to slip easily into the place he left behind.
+
+Miles has other ideas.
+
+The funny, confident paramedic Luke once knew is still there, but Miles has built a life that no longer includes waiting for Luke to remember him. He has friends, lovers, and absolutely no intention of becoming convenient again just because Luke has finally come home.
+
+Then a drunken wedding-night disaster lands them in the wrong luxury car.
+
+By morning, CCTV footage has made them look involved in something far more dangerous than grand theft auto, and staying together becomes their safest option. Forced into close quarters, old familiarity returns with a new edge. Jealousy gets harder to explain. Boundaries become increasingly optional. And Luke starts wanting things from his best friend that he has never wanted from another man.
+
+What begins as one reckless kiss soon becomes filthy, complicated, and impossible to dismiss.
+
+But with danger closing in and Luke's old life waiting for him elsewhere, Miles refuses to be another temporary mistake.
+
+Luke left him once. This time, coming back will not be enough.`,
+    contentWarnings: [
+      "Strong language",
+      "Explicit MM sexual content",
+      "Alcohol use",
+      "Threats and violence",
+      "Crime and danger",
+    ],
+    heat: "★★★★★",
+    length: "Full Length Novel",
+    ending: "HEA",
+    tropes: [
+      "Friends to Lovers",
+      "Gay Awakening",
+      "Forced Proximity",
+      "Only One Bed",
+      "Romantic Suspense",
+    ],
+    cover: "/covers/The Long Way Back.jpg",
+    amazon: "https://www.amazon.com/dp/B0HK3W9CWP",
+    ku: true,
+  },
+  {
     slug: "after-class",
     title: "After Class",
     subgenre: "College Romance",

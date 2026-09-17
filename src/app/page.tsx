@@ -4,13 +4,13 @@ import { books } from "@/data/books";
 
 export default function Home() {
   const featuredSlugs = [
+    "the-long-way-back",
     "after-class",
     "fault-line-friction",
     "borrow-my-calm",
     "trouble-like-you",
     "executive-dysfunction",
     "coach-curious",
-    "the-captains-rule",
   ];
 
   const carouselBooks = [

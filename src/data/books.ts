@@ -370,6 +370,54 @@ After Class is a high-heat contemporary MM romance featuring a forbidden profess
     ku: true,
   },
   {
+    slug: "break-my-guard",
+    title: "Break My Guard",
+    subgenre: "Hockey Romance",
+    blurb: `Roman Vega has spent years hating Dylan Kerr.
+
+Dylan's injury handed Roman the opportunity that made his career. The accusations that followed turned professional rivalry into something vicious, and one infamous fight ensured the entire hockey world knew exactly how they felt about each other.
+
+Now Dylan has been traded to Denver.
+
+Roman's contract is on the line, Dylan is desperate to prove he still belongs at the top, and only one of them can own the starting position. But after their hostility explodes in front of the team, they're forced into a joint publicity campaign designed to convince everyone they can work together.
+
+Being trapped alone with the man Roman despises should be unbearable. Instead, every argument drags them closer to the one thing neither has managed to forget: the kiss they shared years ago and never spoke about again.
+
+Soon they're crossing lines neither intended to approach sober, turning years of anger into something filthy, addictive and increasingly impossible to dismiss. But with the press watching, the playoffs approaching and their careers still in direct competition, wanting each other could cost them everything they've spent years protecting.
+
+Because sharing the net is difficult.
+
+Sharing control is worse.
+
+And letting the enemy past your guard might be the most dangerous move of all.
+
+Break My Guard is a standalone romance set in the world of Borrow My Calm.`,
+    contentWarnings: [
+      "Strong language",
+      "Explicit MM sexual content",
+      "Rough and emotionally charged sex",
+      "Sports injuries",
+      "Pressure to play while injured",
+      "Workplace retaliation and abuse of authority",
+      "Medical privacy violations",
+      "Media harassment",
+      "References to a past physical fight",
+    ],
+    heat: "★★★★★",
+    length: "Full Length Novel",
+    ending: "HEA",
+    tropes: [
+      "Rival Goalies",
+      "Enemies to Lovers",
+      "Enemies with Benefits",
+      "Forced Proximity",
+      "High Spice",
+    ],
+    cover: "/covers/break-my-guard.jpg",
+    amazon: "https://www.amazon.com/dp/B0HN2LDYDH",
+    ku: true,
+  },
+  {
     slug: "trouble-like-you",
     title: "Trouble Like You",
     subgenre: "Contemporary Romance",
@@ -492,3 +540,4 @@ Others reveal who you were all along.`,
     ku: true,
   },
 ];
+

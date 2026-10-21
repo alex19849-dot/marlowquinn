@@ -4,6 +4,7 @@ import { books } from "@/data/books";
 
 export default function Home() {
   const featuredSlugs = [
+    "call-my-bluff",
     "the-long-way-back",
     "after-class",
     "fault-line-friction",
@@ -77,4 +78,5 @@ export default function Home() {
     </main>
   );
 }
+
 

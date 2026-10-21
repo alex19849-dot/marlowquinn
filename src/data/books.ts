@@ -1,5 +1,46 @@
 export const books = [
   {
+    slug: "call-my-bluff",
+    title: "Call My Bluff",
+    subgenre: "Contemporary Romance",
+    blurb: `Nick Harris has a smart mouth. Adam Miller is starting to take it seriously.
+
+Their sons becoming best friends was convenient. Sharing lifts to the boys' summer jobs made sense. Staying for another beer, another conversation, another excuse not to go home? Neither dad expected that part.
+
+Nick likes making the quieter man laugh. He likes it even more when Adam gives him something filthy to laugh about. They're both straight, both single, and surely old enough to recognise harmless banter.
+
+Then Adam calls his bluff.
+
+And Nick kisses him back.
+
+Exploring privately seems simple enough. Their sons don't need to know. The neighbours don't need an explanation. They can enjoy themselves without deciding what it means.
+
+Except Nick starts wanting the overnight stays as much as the sex. Adam starts wanting answers Nick can't charm his way around. And keeping something private feels very different when the man beside you makes it sound like a joke.
+
+With their families growing closer and their feelings getting harder to disguise, Nick and Adam have to decide how much honesty they can handle when neither is bluffing anymore.
+
+Call My Bluff is a high-heat standalone MM romance featuring two single dads discovering an unexpected attraction, filthy flirting, neighbourly temptation, emotional complications and a satisfying happily ever after.`,
+    contentWarnings: [
+      "Strong language",
+      "Explicit MM sexual content",
+      "Alcohol use",
+      "Divorce and co-parenting themes",
+    ],
+    heat: "★★★★★",
+    length: "Full Length Novel",
+    ending: "HEA",
+    tropes: [
+      "Single Dads",
+      "Neighbours to Lovers",
+      "Double Awakening",
+      "Secret Relationship",
+      "High Spice",
+    ],
+    cover: "/covers/call-my-bluff.jpg",
+    amazon: "https://www.amazon.com/dp/B0HNRBGGDM",
+    ku: false,
+  },
+  {
     slug: "the-long-way-back",
     title: "The Long Way Back",
     subgenre: "Romantic Suspense",
@@ -540,4 +581,5 @@ Others reveal who you were all along.`,
     ku: true,
   },
 ];
+
 

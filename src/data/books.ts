@@ -1,5 +1,38 @@
 export const books = [
   {
+    "slug": "scream-for-me",
+    "title": "Scream for Me",
+    "subgenre": "MM Horror Romance",
+    "blurb": "Ben has wanted Connor for weeks. Getting locked in an abandoned asylum with him wasn’t how he planned to make a move.\n\nAfter a Halloween dare goes wrong, they wake to find their friends gone and the doors sealed. Searching for an exit brings them closer, until neither wants to pretend the attraction is one-sided.\n\nBut they aren’t alone. A burned figure patrols the corridors, familiar voices lure them into empty rooms, and something inside wants them to stay.\n\nAn adult MM horror romance with on-page heat, graphic horror and a guaranteed romantic happy ending.",
+    "contentWarnings": [
+      "Explicit sexual content between adults",
+      "Strong language",
+      "Graphic violence, blood and gore",
+      "Disturbing bodily imagery",
+      "Supernatural horror, ghosts and threatening apparitions",
+      "Confinement, locked rooms and claustrophobic situations",
+      "Threats of death",
+      "Historical abuse and neglect within a psychiatric institution",
+      "References to a fatal fire, burns and deaths",
+      "Self-injury imagery involving a supernatural figure",
+      "Impersonation of loved ones",
+      "Psychological manipulation and threats of forced separation"
+    ],
+    "heat": "Explicit on-page intimacy",
+    "length": "Short Romance (Approx. 17,000 Words)",
+    "ending": "HEA",
+    "tropes": [
+      "Mutual Pining",
+      "Forced Proximity",
+      "College Romance",
+      "Haunted Asylum",
+      "Halloween"
+    ],
+    "cover": "/covers/Scream-for-Me.jpg",
+    "amazon": "https://www.amazon.com/dp/B0HPXMRDFT",
+    "ku": false
+  },
+  {
     slug: "call-my-bluff",
     title: "Call My Bluff",
     subgenre: "Contemporary Romance",

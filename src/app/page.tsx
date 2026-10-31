@@ -4,6 +4,7 @@ import { books } from "@/data/books";
 
 export default function Home() {
   const featuredSlugs = [
+    "scream-for-me",
     "call-my-bluff",
     "the-long-way-back",
     "after-class",

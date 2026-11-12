@@ -4,6 +4,7 @@ import { books } from "@/data/books";
 
 export default function Home() {
   const featuredSlugs = [
+    "holiday-hookup",
     "scream-for-me",
     "call-my-bluff",
     "the-long-way-back",
@@ -79,5 +80,6 @@ export default function Home() {
     </main>
   );
 }
+
 
 

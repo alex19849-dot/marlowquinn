@@ -1,5 +1,29 @@
 export const books = [
   {
+    "slug": "holiday-hookup",
+    "title": "Holiday Hookup",
+    "subgenre": "MM Christmas Romance",
+    "blurb": "Travis books a mountain cabin for a week of peace, quiet and absolutely no Christmas obligations. Cody arrives with the same reservation, a Christmas tree and no intention of leaving.\n\nA double booking and a closed access road leave them sharing a holiday neither planned. Travis wants to be left alone. Cody wants the Christmas he has spent months arranging. Neither expects to enjoy the other man quite so much.\n\nBetween competitive decorating, a disastrous gingerbread contest and increasingly tempting distractions, they agree to a Christmas fling. No promises. No expectations beyond checkout.\n\nBut Travis is getting possessive, Cody is getting attached, and December twenty-sixth is coming far too quickly.\n\nA funny, high-heat standalone MM Christmas novella with grumpy/sunshine chemistry, forced proximity and a happily-ever-after.",
+    "contentWarnings": [
+      "Explicit sexual content between adults",
+      "Strong language",
+      "Alcohol consumption",
+      "References to a former partner’s emotionally belittling behaviour"
+    ],
+    "heat": "★★★★★",
+    "length": "Novella (Approx. 29,000 Words)",
+    "ending": "HEA",
+    "tropes": [
+      "Grumpy / Sunshine",
+      "Forced Proximity",
+      "Christmas Fling",
+      "Holiday Romance"
+    ],
+    "cover": "/covers/Holiday-Hookup.jpg",
+    "amazon": "https://www.amazon.com/dp/B0HRFDV7JN",
+    "ku": false
+  },
+  {
     "slug": "scream-for-me",
     "title": "Scream for Me",
     "subgenre": "MM Horror Romance",
@@ -614,5 +638,6 @@ Others reveal who you were all along.`,
     ku: true,
   },
 ];
+
 
 

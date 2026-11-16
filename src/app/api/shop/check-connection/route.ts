@@ -20,20 +20,23 @@ export async function POST(request: Request) {
     const stripe = stripeClient();
     const session = await stripe.checkout.sessions.create({
       mode: 'payment', line_items: [{ price: process.env.STRIPE_TOTE_PRICE_ID!, quantity: 1 }],
+      adaptive_pricing: { enabled: false }, automatic_tax: { enabled: false },
+      shipping_address_collection: { allowed_countries: ['GB'] },
+      shipping_options: [{ shipping_rate_data: { type: 'fixed_amount', display_name: 'UK tracked delivery included', fixed_amount: { amount: 0, currency: 'gbp' } } }],
       success_url: `${SHOP_URL}/shop/thank-you`, cancel_url: `${SHOP_URL}/shop`,
       metadata: { purpose: 'connection-check-no-order' },
-    }, { idempotencyKey: `shop-connection-check-${expected.slice(0, 16)}` });
+    }, { idempotencyKey: `shop-connection-check-v2-${expected.slice(0, 16)}` });
     checks.stripe = session.livemode && session.currency === 'gbp' && session.amount_total === TOTE_PRICE_PENCE;
     if (session.status === 'open') await stripe.checkout.sessions.expire(session.id);
   } catch { checks.stripe = false; }
   try {
-    const query = new URLSearchParams({ AppId: process.env.INKTHREADABLE_APP_ID!, format: 'JSON' });
+    const query = new URLSearchParams({ AppId: process.env.INKTHREADABLE_APP_ID!, limit: '1', format: 'JSON' });
     const signature = createHash('sha1').update(query.toString() + process.env.INKTHREADABLE_SECRET).digest('hex');
     query.set('Signature', signature);
-    const response = await fetch(`https://www.inkthreadable.co.uk/api/orders/count.php?${query}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
+    const response = await fetch(`https://www.inkthreadable.co.uk/api/orders.php?${query}`, { cache: 'no-store', signal: AbortSignal.timeout(15000) });
     const data = await response.json();
-    const hasCount = typeof data === 'number' || (data && typeof data === 'object' && Object.entries(data).some(([key, value]) => /count|total/i.test(key) && /^\d+$/.test(String(value))));
-    checks.inkthreadable = response.ok && Boolean(hasCount) && !data?.error;
+    const hasOrders = Array.isArray(data) || Array.isArray(data?.orders);
+    checks.inkthreadable = response.ok && hasOrders && !data?.error;
     if (!checks.inkthreadable) issues.inkthreadable = `HTTP ${response.status}; fields: ${Object.keys(data || {}).join(',').slice(0, 100)}`;
   } catch { checks.inkthreadable = false; }
   try {

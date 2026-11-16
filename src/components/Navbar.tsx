@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useEffect,useRef,useState } from 'react';
-const links=[{href:'/',label:'Home'},{href:'/books',label:'Books'},{href:'/about',label:'About'},{href:'/newsletter',label:'Reader list'},{href:'/contact',label:'Contact'}];
+const links=[{href:'/',label:'Home'},{href:'/books',label:'Books'},{href:'/shop',label:'Shop'},{href:'/about',label:'About'},{href:'/newsletter',label:'Reader list'},{href:'/contact',label:'Contact'}];
 export default function Navbar(){
   const pathname=usePathname();
   const [isOpen,setIsOpen]=useState(false);

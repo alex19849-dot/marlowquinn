@@ -10,8 +10,9 @@ export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: n
   if (!country) throw new Error('Shipping country is invalid.');
   return {
     external_id: session.id,
-    brandName: process.env.INKTHREADABLE_BRAND,
-    comment: `Marlow Quinn website order ${session.id}`,
+    brand: process.env.INKTHREADABLE_BRAND,
+    buyer_email: session.customer_details?.email || undefined,
+    comments: `Marlow Quinn website order ${session.id}`,
     shipping_address: {
       firstName: names.shift(), lastName: names.join(' '),
       address1: address.line1, address2: address.line2 || '', city: address.city,
@@ -19,7 +20,12 @@ export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: n
       phone1: session.customer_details?.phone || '',
     },
     shipping: { shippingMethod: 'recorded' },
-    items: [{ pn: process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: '19.99', designs: { front: process.env.INKTHREADABLE_TOTE_ART_URL } }],
+    items: [{
+      pn: process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: 19.99, retailCurrency: 'GBP',
+      description: 'Front DTG print, centred, 220 mm wide. Preserve the artwork aspect ratio.',
+      designs: [{ title: 'Printing Front - DTG', src: process.env.INKTHREADABLE_TOTE_ART_URL }],
+      mockups: [{ title: 'Printing Front - DTG', src: 'https://www.marlowquinn.com/shop/filthy-bookshelf-detail.webp' }],
+    }],
   };
 }
 
@@ -36,7 +42,8 @@ export async function submitSupplierOrder(order: ReturnType<typeof buildSupplier
   const response = await fetch(url, { method: 'POST', headers: { 'Content-Type': 'application/json' }, body, signal: AbortSignal.timeout(20000), cache: 'no-store' });
   if (!response.ok) throw new Error('Supplier order needs review.');
   const data = await response.json();
-  const id = data?.order?.id ?? data?.id;
+  const result = Array.isArray(data) && data.length === 1 ? data[0] : data;
+  const id = result?.order?.id ?? result?.id;
   if (!id || !/^\d+$/.test(String(id))) throw new Error('Supplier confirmation needs review.');
   return String(id);
 }

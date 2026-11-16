@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Script from "next/script";
+import AnalyticsChoice from "@/components/AnalyticsChoice";
 import "./globals.css";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
@@ -36,9 +36,8 @@ export const metadata: Metadata = {
   creator: "Marlow Quinn",
   publisher: "Marlow Quinn",
 
-  alternates: {
-    canonical: "/",
-  },
+
+  alternates: { canonical: "/" },
 
   openGraph: {
     title: "Marlow Quinn | Emotional MM Romance",
@@ -89,19 +88,7 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="bg-[#050505] text-white antialiased">
-        <Script
-  src="https://www.googletagmanager.com/gtag/js?id=G-BXBMNNQ1TH"
-  strategy="afterInteractive"
-/>
-
-<Script id="google-analytics" strategy="afterInteractive">
-  {`
-    window.dataLayer = window.dataLayer || [];
-    function gtag(){dataLayer.push(arguments);}
-    gtag('js', new Date());
-    gtag('config', 'G-BXBMNNQ1TH');
-  `}
-</Script>
+        <AnalyticsChoice />
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{
@@ -109,6 +96,7 @@ export default function RootLayout({
           }}
         />
 
+        <a href="#main-content" className="skip-link">Skip to content</a>
         <Navbar />
         {children}
         <Footer />

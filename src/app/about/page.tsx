@@ -2,12 +2,13 @@ import type { Metadata } from "next";
 import Link from "next/link";
 export const metadata: Metadata = {
   title: "About",
+  alternates: { canonical: "/about" },
   description:
     "Learn more about Marlow Quinn, author of dark, emotional, high-heat MM romance with found family, forbidden attraction, romantic suspense, sports romance, and hard-won happily-ever-afters.",
 };
 export default function AboutPage() {
   return (
-    <main className="min-h-screen bg-[#050505] text-white">
+    <main id="main-content" className="min-h-screen bg-[#050505] text-white">
       <section className="mx-auto max-w-6xl px-6 py-16">
         <div className="grid gap-12 lg:grid-cols-[0.8fr_1.2fr] lg:items-center">
           <div className="border-l-2 border-[#ff2f8f] pl-6">
@@ -46,7 +47,7 @@ export default function AboutPage() {
             </p>
 
             <p className="font-semibold text-white">
-              All Marlow Quinn books are available on Kindle Unlimited.
+              Many Marlow Quinn books are available in Kindle Unlimited. Check each book page for availability.
             </p>
           </div>
         </div>

@@ -20,6 +20,6 @@ export default function ToteGallery() {
         <Image src={item.src} alt="" width={64} height={64} sizes="64px"/><span>{item.label}</span>
       </button>)}
     </div>
-    <p className="fine-print">Design mockups. Final product details will be confirmed before launch.</p>
+    <p className="fine-print">Product mockups. Colours and print placement may vary slightly.</p>
   </div>;
 }

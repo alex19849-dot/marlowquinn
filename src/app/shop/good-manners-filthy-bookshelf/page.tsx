@@ -1,6 +1,10 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import ToteGallery from '@/components/ToteGallery';
+import ToteCheckout from '@/components/ToteCheckout';
+import { checkoutReady } from '@/lib/shop';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'Good Manners, Filthy Bookshelf Tote',
@@ -26,11 +30,11 @@ export default function TotePage() {
         <p>Your manners can be impeccable. Your reading list is another matter entirely.</p>
         <p>A black tote with statement ivory and magenta lettering, a tiny heart and a shelf of rainbow books. For readers who like their stories a little less well-behaved.</p>
         <div className="tote-colour"><span className="tote-swatch" aria-hidden="true"/><span>Colour: <strong>Black</strong></span></div>
-        <div className="shop-launch"><span className="shop-status">Coming soon</span><p>Be first to hear when the shop opens, with prices and delivery details ready before you order.</p><Link href="/newsletter" className="button-primary">Keep me in the loop</Link></div>
+        <ToteCheckout enabled={checkoutReady()}/>
         <details className="content-notes"><summary>The design</summary><p className="muted">“Good manners. Filthy bookshelf.” in ivory and magenta, finished with a small heart and six books in rainbow colours.</p></details>
         <details className="content-notes" open><summary>The bag</summary><ul><li>100% organic ring-spun combed cotton.</li><li>Lightweight 160 gsm fabric in a plain weave.</li><li>Double-folded top edge for strength and a clean finish.</li><li>Long handles with reinforced cross stitching.</li></ul></details>
         <details className="content-notes"><summary>Size & fit</summary><dl className="tote-measurements"><div><dt>Width</dt><dd>37 cm</dd></div><div><dt>Height</dt><dd>42 cm</dd></div><div><dt>Strap length</dt><dd>65 cm</dd></div></dl><p className="muted">One size. Measurements are approximate and provided as a guide.</p></details>
-        <details className="content-notes"><summary>Colour, care & delivery</summary><p className="muted">Black with an ivory, magenta and rainbow design. Colours may vary slightly from your screen.</p><p className="muted">Care instructions, price and delivery options will be available here before the tote goes on sale.</p></details>
+        <details className="content-notes"><summary>Colour, care & delivery</summary><p className="muted">Black with an ivory, magenta and rainbow design. Colours may vary slightly from your screen.</p><p className="muted">£19.99 per tote with UK tracked delivery included. International delivery varies by destination and order size. Care instructions will be confirmed before launch.</p></details>
         <Link href="/books" className="text-link">Find something filthy for your bookshelf <span aria-hidden="true">→</span></Link>
       </section>
     </div>

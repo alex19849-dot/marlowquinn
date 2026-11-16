@@ -1,74 +1,13 @@
-"use client";
-
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import { useState } from "react";
-
-const links = [
-  { href: "/", label: "Home" },
-  { href: "/books", label: "Books" },
-  { href: "/about", label: "About" },
-  { href: "/newsletter", label: "Newsletter" },
-  { href: "/contact", label: "Contact" },
-];
-
-export default function Navbar() {
-  const pathname = usePathname();
-  const [isOpen, setIsOpen] = useState(false);
-
-  return (
-    <header className="sticky top-0 z-50 border-b border-zinc-800/70 bg-black/90 backdrop-blur-md">
-     <nav className="mx-auto flex h-14 max-w-7xl items-center justify-end px-6 md:h-20 md:justify-center">
-        <button
-          type="button"
-          onClick={() => setIsOpen(!isOpen)}
-          className="text-4xl leading-none text-white md:hidden"
-          aria-label="Open navigation menu"
-        >
-          ☰
-        </button>
-
-        <div className="hidden items-center justify-center gap-10 text-sm font-medium uppercase tracking-[0.25em] md:flex">
-          {links.map((link) => {
-            const isActive = pathname === link.href;
-
-            return (
-              <Link
-                key={link.href}
-                href={link.href}
-                className={
-                  isActive
-                    ? "border-b border-[#ff2f8f] pb-1 text-[#ff2f8f]"
-                    : "border-b border-transparent pb-1 text-zinc-300 hover:text-[#ff2f8f]"
-                }
-              >
-                {link.label}
-              </Link>
-            );
-          })}
-        </div>
-      </nav>
-
-      {isOpen && (
-        <div className="border-t border-zinc-800 bg-black px-6 py-6 md:hidden">
-          <div className="flex flex-col gap-5 text-sm font-medium uppercase tracking-[0.25em]">
-            {links.map((link) => {
-              const isActive = pathname === link.href;
-
-              return (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  onClick={() => setIsOpen(false)}
-                  className={isActive ? "text-[#ff2f8f]" : "text-zinc-300"}
-                >
-                  {link.label}
-                </Link>
-              );
-            })}
-          </div>
-        </div>
-      )}
-    </header>
-  );
+'use client';
+import Link from 'next/link';
+import { usePathname } from 'next/navigation';
+import { useEffect,useRef,useState } from 'react';
+const links=[{href:'/',label:'Home'},{href:'/books',label:'Books'},{href:'/about',label:'About'},{href:'/newsletter',label:'Reader list'},{href:'/contact',label:'Contact'}];
+export default function Navbar(){
+  const pathname=usePathname();
+  const [isOpen,setIsOpen]=useState(false);
+  const button=useRef<HTMLButtonElement>(null);
+  useEffect(()=>{function escape(event:KeyboardEvent){if(event.key==='Escape'){setIsOpen(false);button.current?.focus();}}if(isOpen)document.addEventListener('keydown',escape);return()=>document.removeEventListener('keydown',escape);},[isOpen]);
+  const active=(href:string)=>href==='/'?pathname==='/':pathname.startsWith(href);
+  return <header className="site-header" onBlur={event=>{if(!event.currentTarget.contains(event.relatedTarget))setIsOpen(false);}}><nav className="site-nav" aria-label="Main navigation"><Link href="/" className="wordmark" onClick={()=>setIsOpen(false)}>Marlow <span>Quinn</span></Link><div className="desktop-nav">{links.map(link=><Link key={link.href} href={link.href} aria-current={active(link.href)?'page':undefined}>{link.label}</Link>)}</div><button ref={button} type="button" className="menu-button" aria-expanded={isOpen} aria-controls="mobile-navigation" aria-label={isOpen?'Close navigation menu':'Open navigation menu'} onClick={()=>setIsOpen(open=>!open)}><span aria-hidden="true">{isOpen?'✕':'☰'}</span><span>Menu</span></button></nav><nav id="mobile-navigation" className="mobile-nav" aria-label="Mobile navigation" hidden={!isOpen}>{links.map(link=><Link key={link.href} href={link.href} aria-current={active(link.href)?'page':undefined} onClick={()=>setIsOpen(false)}>{link.label}</Link>)}</nav></header>;
 }

@@ -1,85 +1,15 @@
-import Image from "next/image";
-import Link from "next/link";
-import { books } from "@/data/books";
-
-export default function Home() {
-  const featuredSlugs = [
-    "holiday-hookup",
-    "scream-for-me",
-    "call-my-bluff",
-    "the-long-way-back",
-    "after-class",
-    "fault-line-friction",
-    "borrow-my-calm",
-    "break-my-guard",
-    "trouble-like-you",
-    "executive-dysfunction",
-    "coach-curious",
-  ];
-
-  const carouselBooks = [
-    ...featuredSlugs.map((slug) => books.find((book) => book.slug === slug)!),
-    ...featuredSlugs.map((slug) => books.find((book) => book.slug === slug)!),
-  ];
-
-  return (
-    <main className="h-[calc(100vh-80px)] overflow-hidden bg-[#050505] px-4 py-4 text-white sm:px-6 sm:py-6">
-      <section className="mx-auto flex max-w-7xl flex-col items-center text-center">
-        <h1 className="text-3xl font-bold uppercase tracking-[0.22em] text-white sm:text-5xl">
-          Marlow Quinn
-        </h1>
-
-        <p className="mt-2 text-xs uppercase tracking-[0.45em] text-[#ff2f8f]">
-          Author
-        </p>
-
-        <p className="mx-auto mt-4 max-w-xl text-base leading-6 text-zinc-300 sm:text-lg">
-          Emotional MM Romance with bite, heat, and heart.
-        </p>
-
-        <div className="mt-6 w-full overflow-hidden">
-          <div className="flex w-max animate-[scrollBooks_35s_linear_infinite] gap-6">
-            {carouselBooks.map((book, index) => (
-              <Link
-                key={`${book.slug}-${index}`}
-                href={`/books/${book.slug}`}
-                className="w-[150px] shrink-0 sm:w-[190px] lg:w-[220px]"
-              >
-                <div className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/50">
-                  <Image
-                    src={book.cover}
-                    alt={`${book.title} book cover`}
-                    width={400}
-                    height={600}
-                    className="aspect-[2/3] w-full object-cover"
-                  />
-                </div>
-
-                <h2 className="mt-3 text-sm font-semibold">{book.title}</h2>
-              </Link>
-            ))}
-          </div>
-        </div>
-
-        <div className="mt-5 flex flex-row justify-center gap-3">
-          <Link
-            href="/books"
-            className="rounded-full bg-[#ff2f8f] px-6 py-3 text-sm font-semibold text-black sm:px-8 sm:text-base"
-          >
-            Browse Books
-          </Link>
-
-          <Link
-            href="/newsletter"
-            className="rounded-full border border-zinc-700 px-6 py-3 text-sm font-semibold text-white sm:px-8 sm:text-base"
-          >
-            Join Newsletter
-          </Link>
-        </div>
-      </section>
-    </main>
-  );
+import Image from 'next/image';
+import Link from 'next/link';
+import { books } from '@/data/books';
+import { BookCard, NewsletterForm } from '@/components/ReaderTools';
+const shelves = [
+  { title: 'Rivalry & ice', category: 'Sports', text: 'Competitive men. Close quarters. Chemistry that refuses to behave.' },
+  { title: 'Everyday temptation', category: 'Contemporary', text: 'Single dads, neighbours and feelings that complicate everything.' },
+  { title: 'A little danger', category: 'Suspense & horror', text: 'High stakes, dark secrets and someone worth fighting for.' },
+  { title: 'Beyond the ordinary', category: 'Paranormal', text: 'Vampires, werewolves and a pull neither man can ignore.' },
+];
+export default function Home(){
+  const featured=books.find(book=>book.slug==='holiday-hookup')!;
+  const picks=['break-my-guard','call-my-bluff','scream-for-me'].map(slug=>books.find(book=>book.slug===slug)!);
+  return <main id="main-content"><section className="hero page-width"><div className="hero-copy"><p className="eyebrow">MM romance by Marlow Quinn</p><h1>Bite. Heat.<br/><em>And a whole lot of heart.</em></h1><p className="hero-intro">Rivals, rule-breakers and men who get under each other’s skin. Find your next obsession, and the happily ever after waiting on the other side.</p><div className="button-row"><Link href="/books" className="button-primary">Find your next read</Link><Link href="#start-here" className="button-secondary">New here? Start here</Link></div></div><div className="hero-feature"><Link href={'/books/'+featured.slug} className="hero-cover"><Image src={featured.cover} alt="Holiday Hookup book cover" width={400} height={600} priority sizes="(max-width:767px) 200px, 240px"/></Link><div className="feature-caption"><p className="eyebrow">In the spotlight · Christmas romance</p><h2><Link href={'/books/'+featured.slug}>{featured.title}</Link></h2><p>One cabin. Two very different Christmas plans.</p><Link href={'/books/'+featured.slug} className="text-link">Meet Travis & Cody <span aria-hidden="true">→</span></Link></div></div></section><section id="start-here" className="section page-width"><div className="section-heading"><div><p className="eyebrow">New here?</p><h2>Follow your favourite kind of trouble.</h2></div><p>Pick a mood. We’ll point you towards the books.</p></div><div className="shelf-grid">{shelves.map((shelf,index)=><Link key={shelf.category} href={'/books?category='+encodeURIComponent(shelf.category)} className={'shelf shelf-'+index}><span className="shelf-number" aria-hidden="true">0{index+1}</span><h3>{shelf.title}</h3><p>{shelf.text}</p><span className="text-link">Explore books <span aria-hidden="true">→</span></span></Link>)}</div></section><section className="section page-width"><div className="section-heading"><div><p className="eyebrow">Three places to begin</p><h2>What are you in the mood for?</h2></div><Link href="/books" className="text-link">Browse all {books.length} books <span aria-hidden="true">→</span></Link></div><div className="book-grid three-books">{picks.map(book=><BookCard key={book.slug} book={book}/>)}</div></section><section className="section page-width"><div className="newsletter-panel"><div><p className="eyebrow">Stay for the next chapter</p><h2>Your next read, straight to your inbox.</h2><p>Join the reader list for new releases, cover reveals and reader extras.</p></div><NewsletterForm id="home-newsletter"/></div></section></main>;
 }
-
-
-

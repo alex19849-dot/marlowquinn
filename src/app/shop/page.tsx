@@ -1,14 +1,18 @@
 import type { Metadata } from 'next';
 import Image from 'next/image';
 import Link from 'next/link';
+import { checkoutReady } from '@/lib/shop';
+
+export const dynamic = 'force-dynamic';
 
 export const metadata: Metadata = {
   title: 'The Bookish Shop',
-  description: 'Bookish things for readers with good manners and filthy bookshelves. Explore the first Marlow Quinn tote, coming soon.',
+  description: 'Bookish things for readers with good manners and filthy bookshelves. Shop the first Marlow Quinn organic cotton tote.',
   alternates: { canonical: '/shop' },
 };
 
 export default function ShopPage() {
+  const open = checkoutReady();
   return <main id="main-content" className="page-width shop-page">
     <section className="shop-intro">
       <p className="eyebrow">The Marlow Quinn shop</p>
@@ -19,15 +23,15 @@ export default function ShopPage() {
     <section id="first-drop" className="shop-feature" aria-labelledby="tote-heading">
       <Link className="shop-feature-photo" href="/shop/good-manners-filthy-bookshelf" aria-label="Explore the Good Manners, Filthy Bookshelf tote">
         <Image src="/shop/filthy-bookshelf-model.webp" alt="Model carrying the black Good Manners, Filthy Bookshelf tote with magenta lettering and rainbow books" width={1157} height={1359} priority sizes="(max-width:767px) calc(100vw - 36px), 55vw"/>
-        <span className="shop-photo-badge">The first drop · Coming soon</span>
+        <span className="shop-photo-badge">{open ? 'The first drop · Available now' : 'The first drop · Coming soon'}</span>
       </Link>
       <div className="shop-feature-copy">
         <p className="eyebrow">Meet the first of the collection</p>
         <h2 id="tote-heading">Good manners.<br/><em>Filthy bookshelf.</em></h2>
         <p className="shop-product-type">The bookish tote · Black</p>
         <p>A perfectly respectable bag for your entirely unrespectable reading list. Bold magenta lettering, a little rainbow pride and absolutely no explanation owed.</p>
-        <Link href="/shop/good-manners-filthy-bookshelf" className="button-primary">Take a closer look <span aria-hidden="true">&nbsp;→</span></Link>
-        <p className="fine-print shop-note">Coming soon. Get to know the design before the shop opens.</p>
+        <Link href="/shop/good-manners-filthy-bookshelf" className="button-primary">{open ? 'Shop the tote' : 'Take a closer look'} <span aria-hidden="true">&nbsp;→</span></Link>
+        <p className="fine-print shop-note">{open ? '£19.99 including UK tracked delivery. International delivery calculated at checkout.' : 'Coming soon. Get to know the design before the shop opens.'}</p>
       </div>
     </section>
     <section className="shop-next" aria-labelledby="next-heading">

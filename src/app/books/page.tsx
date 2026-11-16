@@ -1,82 +1,9 @@
-import Image from "next/image";
-import Link from "next/link";
-import { books } from "@/data/books";
-
-import type { Metadata } from "next";
-
-export const metadata: Metadata = {
-  title: "Books",
-  description:
-    "Browse Marlow Quinn's full catalogue of emotional MM romance, including sports romance, paranormal romance, romantic suspense, college romance, Kindle Unlimited reads, and high-heat happily-ever-afters.",
-};
-
-export default function BooksPage() {
-  return (
-    <main className="min-h-screen bg-[#050505] px-6 py-10 text-white">
-      <section className="mx-auto max-w-7xl">
-        <p className="mb-4 text-center text-sm uppercase tracking-[0.35em] text-[#ff2f8f]">
-          Marlow Quinn Books
-        </p>
-
-        <h1 className="text-center text-4xl font-bold sm:text-6xl">
-          Books
-        </h1>
-
-        <p className="mx-auto mt-6 max-w-2xl text-center text-zinc-400">
-          Dark, emotional MM romance with heat, tension, found family, and
-          happily-ever-afters worth fighting for.
-        </p>
-
-        <div className="mt-12 grid gap-8 sm:grid-cols-2 lg:grid-cols-4">
-          {books.map((book) => (
-            <div
-              key={book.slug}
-              className="overflow-hidden rounded-2xl border border-zinc-800 bg-zinc-900/40 transition duration-300 hover:-translate-y-1 hover:border-[#ff2f8f]"
-            >
-              <Link href={`/books/${book.slug}`} className="block">
-                <Image
-                  src={book.cover}
-                  alt={`${book.title} book cover`}
-                  width={400}
-                  height={600}
-                  className="aspect-[2/3] w-full object-cover"
-                />
-              </Link>
-
-              <div className="p-5 text-center">
-                <Link href={`/books/${book.slug}`}>
-                  <h2 className="text-lg font-semibold hover:text-[#ff2f8f]">
-                    {book.title}
-                  </h2>
-                </Link>
-
-                <p className="mt-2 text-sm text-zinc-400">
-                  {book.subgenre}
-                </p>
-
-                <p className="mt-3 text-sm leading-6 text-zinc-500">
-                  {book.tropes.join(" • ")}
-                </p>
-
-                {book.ku && (
-                  <p className="mt-3 text-xs font-semibold uppercase tracking-[0.2em] text-[#ff2f8f]">
-                    Kindle Unlimited
-                  </p>
-                )}
-
-                <Link
-                  href={book.amazon}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="mx-auto mt-5 block w-fit rounded-full bg-[#ff2f8f] px-5 py-2 text-sm font-semibold text-black"
-                >
-                  View on Amazon
-                </Link>
-              </div>
-            </div>
-          ))}
-        </div>
-      </section>
-    </main>
-  );
+import type { Metadata } from 'next';
+import { BookCatalogue } from '@/components/ReaderTools';
+export const metadata: Metadata={title:'Books',description:'Find your next Marlow Quinn MM romance. Browse by genre, trope and Kindle Unlimited availability.',alternates:{canonical:'/books'}};
+export default async function BooksPage({searchParams}:{searchParams:Promise<{category?:string;trope?:string}>}){
+  const params=await searchParams;
+  const category=typeof params.category==='string'?params.category:'';
+  const trope=typeof params.trope==='string'?params.trope:'';
+  return <main id="main-content" className="page-width page-section"><header className="page-heading"><p className="eyebrow">The Marlow Quinn bookshelf</p><h1>Find your next obsession.</h1><p>Follow a favourite trope, choose your mood or explore the whole collection.</p></header><BookCatalogue key={category+':'+trope} initialCategory={category} initialTrope={trope}/></main>;
 }

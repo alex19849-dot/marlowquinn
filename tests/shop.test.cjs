@@ -351,3 +351,28 @@ test('mug checkout charges the fixed mug price and carries white selection throu
   assert.equal(sessions[0].metadata.website_colour,'white'); assert.match(sessions[0].custom_text.submit.message,/White/);
   assert.equal(sessions[0].shipping_options[0].shipping_rate_data.fixed_amount.amount,0);
 });
+
+test('rainbow mug keeps its own print file, mockup and price when fulfilled', async () => {
+  const product = shop.PLOT_MUG_PRODUCT;
+  process.env[product.priceEnv] = 'price_plot_mug';
+  process.env[product.artEnv] = 'https://example.com/rainbow-plot-mug-wrap.png';
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  const submitted = [];
+  const session = fixture({ metadata: { website_slug: product.slug, website_colour: 'white' }, amount_total: 1299, total_details: { amount_shipping: 0 },
+    collected_information: { shipping_details: { name: 'Test Buyer', address: { line1: '1 Test Road', city: 'Test City', country: 'GB' } } },
+    line_items: { data: [{ quantity: 1, amount_total: 1299, price: { id: 'price_plot_mug' } }] } });
+  const fulfill = load('src/lib/fulfill-tote.ts', {
+    './shop': shop, './inkthreadable': { ...supplier, submitSupplierOrder: async order => { submitted.push(order); return '993'; } },
+    './shop-orders': { claimOrder: async () => ({ acquired: true, record: { sessionId: session.id, state: 'submitting' }, etag: 'one' }), saveOrder: async () => {} },
+  }).fulfillTote;
+  const stripe = { checkout: { sessions: { retrieve: async () => session } } };
+  await fulfill(stripe, session.id);
+  const item = submitted[0].items[0];
+  assert.equal(item.pn, 'MUG-CER-WHI');
+  assert.equal(item.designs[0].src, 'https://example.com/rainbow-plot-mug-wrap.png');
+  assert.ok(item.mockups[0].src.endsWith('rainbow-plot-mug-model.webp'));
+  assert.doesNotMatch(item.description, /51778643/);
+  session.line_items.data[0].price.id = process.env[shop.MUG_PRODUCT.priceEnv];
+  await assert.rejects(fulfill(stripe, session.id));
+  assert.equal(submitted.length, 1);
+});

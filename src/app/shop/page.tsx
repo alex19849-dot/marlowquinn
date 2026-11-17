@@ -60,7 +60,7 @@ export default async function ShopPage({ searchParams }: Props) {
         const colours = hasColourOptions(product.slug) ? 'Black or white' : mug ? 'White' : 'Black';
         return <article className="shop-product-card" key={product.slug}>
           <Link className={'shop-feature-photo'+(mug ? ' shop-mug-photo' : '')} href={'/shop/'+product.slug} aria-label={'View '+title+' '+type.toLowerCase()}>
-            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'White Sweet Romance, Filthy Chapters ceramic mug with burgundy lettering, roses and an open book' : (shirt ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+' organic cotton '+type.toLowerCase()} width={mug ? 360 : 1157} height={mug ? 422 : 1359} priority={index < 3} sizes="(max-width:600px) calc((100vw - 48px) / 2), (max-width:900px) 45vw, 380px"/>
+            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'White ceramic mug with the '+product.name+' bookish design' : (shirt ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+' organic cotton '+type.toLowerCase()} width={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 360) : 1157} height={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 422) : 1359} priority={index < 3} sizes="(max-width:600px) calc((100vw - 48px) / 2), (max-width:900px) 45vw, 380px"/>
             {!open && <span className="shop-photo-badge">Coming soon</span>}
           </Link>
           <div className="shop-product-card-body">

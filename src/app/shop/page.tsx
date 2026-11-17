@@ -6,51 +6,78 @@ import { checkoutReady, SHOP_PRODUCTS, hasColourOptions, productImagePrefix } fr
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'The Bookish Shop',
-  description: 'Cheeky bookish mugs, organic cotton T-shirts and totes for readers distracted by fictional men and filthy bookshelves. Shop the Marlow Quinn bookish collection.',
+  description: 'Browse cheeky bookish mugs, organic cotton totes and T-shirts. Find your next Marlow Quinn favourite, with UK delivery included.',
   alternates: { canonical: '/shop' },
 };
-const descriptions = [
-  'A perfectly respectable bag for your entirely unrespectable reading list. Ivory and magenta lettering, a shelf of rainbow books and absolutely no explanation owed.',
-  'You had things to do. Then he appeared on the page. Ivory, magenta and rainbow lettering for readers whose favourite men live between the covers.',
-  'Perfectly polite. Questionable reading material. Your favourite bookshelf confession on a fitted black organic cotton T-shirt, with rainbow books. XS to 3XL.',
-  'You had things to do. Then he appeared on the page. Rainbow lettering and a bookish confession on a fitted black organic cotton T-shirt. XS to 3XL.',
-  'Five stars. Several penalties. No clean thoughts. A hockey romance confession in raspberry, teal and gold. Black or white.',
-  'For the hockey players who live rent-free in your reading list. Fitted organic cotton, black or white, XS to 3XL.',
-  'Here for the plot. And the quarterback’s thighs. American football romance, carried with absolutely no shame. Black or white.',
-  'A very respectable interest in American football. And thighs. Fitted organic cotton, black or white, XS to 3XL.',
-  'Sweet romance. Filthy chapters. A glossy white ceramic mug for your favourite brew and your least innocent reading list. Roses, rich burgundy lettering and an open book.',
-];
-export default function ShopPage() {
-  return <main id="main-content" className="page-width shop-page">
+const categories = [
+  { key: 'all', label: 'Everything' },
+  { key: 'mug', label: 'Mugs' },
+  { key: 'tote', label: 'Tote bags' },
+  { key: 'shirt', label: 'T-shirts' },
+] as const;
+const titles: Record<string, string> = {
+  'quarterbacks-thighs-football-tote': 'The Quarterback’s Thighs',
+  'quarterbacks-thighs-football-t-shirt': 'The Quarterback’s Thighs',
+};
+const pageSize = 6;
+type Props = { searchParams: Promise<{ category?: string | string[]; page?: string | string[] }> };
+
+export default async function ShopPage({ searchParams }: Props) {
+  const query = await searchParams;
+  const category = categories.find(item => item.key === query.category) || categories[0];
+  // Alternate product types on the main shelf so visitors see the range at a glance.
+  const groups = ['tote', 'shirt', 'mug'].map(kind => SHOP_PRODUCTS.filter(product => product.kind === kind));
+  const featured = Array.from({ length: Math.max(...groups.map(group => group.length)) }, (_, index) => groups.flatMap(group => group[index] ? [group[index]] : [])).flat();
+  const collection = category.key === 'all' ? featured : SHOP_PRODUCTS.filter(product => product.kind === category.key);
+  const pageCount = Math.max(1, Math.ceil(collection.length / pageSize));
+  const requestedPage = typeof query.page === 'string' && /^\d{1,6}$/.test(query.page) ? Number(query.page) : 1;
+  const page = Math.min(pageCount, Math.max(1, requestedPage));
+  const first = (page - 1) * pageSize;
+  const products = collection.slice(first, first + pageSize);
+  const href = (key: string, number = 1) => `/shop${key === 'all' && number === 1 ? '' : '?' + new URLSearchParams({ ...(key !== 'all' ? { category: key } : {}), ...(number > 1 ? { page: String(number) } : {}) }).toString()}#collection`;
+
+  return <main id="main-content" className="page-width shop-page shop-browse">
     <section className="shop-intro">
       <p className="eyebrow">The Marlow Quinn shop</p>
       <h1>Good books.<br/><em>Questionable company.</em></h1>
-      <p>For the fictional men you can’t stop thinking about, and the books you probably shouldn’t read in public.</p>
-      <a className="text-link" href="#collection">Find your next bookish favourite <span aria-hidden="true">↓</span></a>
+      <p>A little something for your reading habit. Find your favourite, wear your confession, or put the kettle on.</p>
+      <div className="shop-promises"><span>UK delivery included</span><span>Made to order</span><span>Secure checkout</span></div>
     </section>
-    <section id="collection" aria-labelledby="collection-heading">
-      <div className="section-heading"><div><p className="eyebrow">Pick your kind of trouble</p><h2 id="collection-heading">Wear it. Carry it. Sip it.</h2></div></div>
-      <div className="shop-collection">{SHOP_PRODUCTS.map((product, index) => {
+    <section id="collection" className="shop-catalogue" aria-labelledby="collection-heading">
+      <nav className="shop-categories" aria-label="Shop by product type">
+        {categories.map(item => {
+          const count = item.key === 'all' ? SHOP_PRODUCTS.length : SHOP_PRODUCTS.filter(product => product.kind === item.key).length;
+          return <Link href={href(item.key)} className="shop-category" key={item.key} aria-current={category.key === item.key ? 'page' : undefined}>{item.label}<span>{count}</span></Link>;
+        })}
+      </nav>
+      <div className="shop-catalogue-heading"><div><p className="eyebrow">Pick your kind of trouble</p><h2 id="collection-heading">{category.key === 'all' ? 'The bookish collection' : category.label}</h2></div><p className="shop-product-count">{collection.length > pageSize ? `${first + 1}–${Math.min(first + pageSize, collection.length)} of ${collection.length}` : collection.length} {collection.length === 1 ? 'favourite' : 'favourites'}</p></div>
+      <div className="shop-collection">{products.map((product, index) => {
         const open = checkoutReady(product.slug);
         const mug = product.kind === 'mug';
-        const type = product.kind === 'shirt' ? 'T-shirt' : mug ? 'mug' : 'tote';
+        const shirt = product.kind === 'shirt';
+        const type = shirt ? 'T-shirt' : mug ? 'Mug' : 'Tote bag';
+        const title = titles[product.slug] || product.name;
+        const colours = hasColourOptions(product.slug) ? 'Black or white' : mug ? 'White' : 'Black';
         return <article className="shop-product-card" key={product.slug}>
-          <Link className="shop-feature-photo" href={'/shop/'+product.slug} aria-label={'Explore the '+product.name+' '+type}>
-            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'Glossy white Sweet Romance, Filthy Chapters ceramic mug with burgundy lettering, roses and an open book' : (product.kind === 'shirt' ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+' organic cotton '+type} width={1157} height={1359} priority={index === 0} sizes="(max-width:767px) calc(100vw - 36px), (max-width:1200px) 45vw, 575px"/>
-            <span className="shop-photo-badge">{open ? 'Available now' : 'Coming soon'}</span>
+          <Link className={'shop-feature-photo'+(mug ? ' shop-mug-photo' : '')} href={'/shop/'+product.slug} aria-label={'View '+title+' '+type.toLowerCase()}>
+            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'White Sweet Romance, Filthy Chapters ceramic mug with burgundy lettering, roses and an open book' : (shirt ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+' organic cotton '+type.toLowerCase()} width={mug ? 360 : 1157} height={mug ? 422 : 1359} priority={index < 3} sizes="(max-width:600px) calc((100vw - 48px) / 2), (max-width:900px) 45vw, 380px"/>
+            {!open && <span className="shop-photo-badge">Coming soon</span>}
           </Link>
           <div className="shop-product-card-body">
-            <p className="eyebrow">{mug ? 'The bookish mug · White · 11oz' : product.kind === 'shirt' ? 'Fitted T-shirt · '+(hasColourOptions(product.slug) ? 'Black or white' : 'Black')+' · XS to 3XL' : 'The bookish tote · '+(hasColourOptions(product.slug) ? 'Black or white' : 'Black')}</p><h3>{product.name}{mug ? ' Mug' : product.kind === 'shirt' ? ' T-shirt' : hasColourOptions(product.slug) ? ' Tote' : ''}</h3><p>{descriptions[index]}</p>
-            <p className="shop-card-price">£{(product.pricePence / 100).toFixed(2)} <span>including UK tracked delivery</span></p>
-            <Link href={'/shop/'+product.slug} className="button-primary">{open ? (mug ? 'Shop this mug' : product.kind === 'shirt' ? 'Shop this T-shirt' : 'Shop this tote') : 'Take a closer look'} <span aria-hidden="true">→</span></Link>
+            <p className="shop-card-kind">{type}{mug ? ' · 11oz' : shirt ? ' · XS–3XL' : ''}</p>
+            <h3><Link href={'/shop/'+product.slug}>{title}</Link></h3>
+            <p className="shop-card-options">{mug ? 'Glossy ceramic' : 'Organic cotton'} · {colours}</p>
+            <div className="shop-card-footer"><p className="shop-card-price">£{(product.pricePence / 100).toFixed(2)}<span>UK delivery included</span></p><Link href={'/shop/'+product.slug} className="button-secondary" aria-label={'View '+title+' '+type.toLowerCase()}>View item <span aria-hidden="true">→</span></Link></div>
           </div>
         </article>;
       })}</div>
-      <p className="fine-print shop-note">Made to order, from organic cotton favourites to glossy ceramic mugs. International delivery is calculated by destination and quantity on each product page.</p>
+      {pageCount > 1 && <nav className="shop-pagination" aria-label="Product pages">
+        {page > 1 && <Link href={href(category.key, page - 1)} className="button-secondary">← Previous</Link>}
+        <div className="shop-page-numbers">{Array.from({ length: pageCount }, (_, i) => i + 1).map(number => number === page ? <span key={number} aria-current="page" aria-label={'Page '+number}>{number}</span> : <Link key={number} href={href(category.key, number)} aria-label={'Page '+number}>{number}</Link>)}</div>
+        {page < pageCount && <Link href={href(category.key, page + 1)} className="button-secondary">Next →</Link>}
+      </nav>}
+      <p className="fine-print shop-note">International delivery is calculated on each product page. Choose a design to see more photos, colours and product details.</p>
     </section>
-    <section className="shop-next" aria-labelledby="next-heading">
-      <div><p className="eyebrow">A little more temptation</p><h2 id="next-heading">Your reading habit.<br/>Soon, on everything.</h2></div>
-      <div><p>Totes, T-shirts and mugs are here, with the same love of books, fictional men and questionable decisions. More bookish temptations are on the way.</p><Link href="/newsletter" className="text-link">Join the reader list for shop news <span aria-hidden="true">→</span></Link></div>
-    </section>
+    <section className="shop-reader-note"><div><p className="eyebrow">More temptation, less inbox clutter</p><h2>Your next favourite is coming.</h2><p>Join the reader list for new designs, new books and fictional men worth losing sleep over.</p></div><Link href="/newsletter" className="button-secondary">Join the reader list <span aria-hidden="true">→</span></Link></section>
   </main>;
 }

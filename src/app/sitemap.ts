@@ -3,7 +3,7 @@ import { books } from "@/data/books";
 export default function sitemap() {
   const baseUrl = "https://www.marlowquinn.com";
 
-  const staticPages = ["", "/books", "/about", "/newsletter", "/contact", "/privacy", "/shop", "/shop/good-manners-filthy-bookshelf"].map(
+  const staticPages = ["", "/books", "/about", "/newsletter", "/contact", "/privacy", "/shop", "/shop/good-manners-filthy-bookshelf", "/shop/easily-distracted-by-fictional-men"].map(
     (route) => ({
       url: `${baseUrl}${route}`,
       lastModified: new Date(),

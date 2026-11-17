@@ -18,7 +18,8 @@ export const SPORTS_PRODUCTS = [
 ] as const;
 export const MUG_PRODUCT = { slug: 'sweet-romance-filthy-chapters-mug', name: 'Sweet Romance. Filthy Chapters.', priceEnv: 'STRIPE_ROMANCE_MUG_PRICE_ID', productEnv: 'STRIPE_ROMANCE_MUG_PRODUCT_ID', artEnv: 'INKTHREADABLE_ROMANCE_MUG_ART_URL', imagePrefix: 'sweet-romance-mug', kind: 'mug', pricePence: 1299, usDutyPermille: 185 } as const;
 export const PLOT_MUG_PRODUCT = { ...MUG_PRODUCT, slug: 'came-for-the-plot-stayed-for-the-men-mug', name: 'I Came for the Plot. Stayed for the Men.', priceEnv: 'STRIPE_PLOT_MUG_PRICE_ID', productEnv: 'STRIPE_PLOT_MUG_PRODUCT_ID', artEnv: 'INKTHREADABLE_PLOT_MUG_ART_URL', imagePrefix: 'rainbow-plot-mug' } as const;
-export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT, ...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT] as const;
+export const VAMPIRE_TOTE_PRODUCT = { ...TOTE_PRODUCTS[0], slug: 'my-book-boyfriend-bites-tote', name: 'My Book Boyfriend Bites.', priceEnv: 'STRIPE_VAMPIRE_TOTE_PRICE_ID', productEnv: 'STRIPE_VAMPIRE_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_VAMPIRE_TOTE_ART_URL', imagePrefix: 'vampire-boyfriend-tote' } as const;
+export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT, ...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT] as const;
 export function validShirtSize(size: unknown): size is typeof SHIRT_SIZES[number] {
   return typeof size === 'string' && (SHIRT_SIZES as readonly string[]).includes(size);
 }

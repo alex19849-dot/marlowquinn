@@ -142,3 +142,63 @@ test('the webhook rejects forged notifications and accepts only signed live shop
   assert.equal((await POST(request(unrelated, stripe.webhooks.generateTestHeaderString({ payload: unrelated, secret })))).status, 200);
   assert.equal(calls, 1);
 });
+
+
+test('shirt fulfilment preserves every size and uses the shirt price and print limits', async () => {
+  process.env.STRIPE_GOOD_MANNERS_SHIRT_PRICE_ID = 'price_shirt';
+  process.env.INKTHREADABLE_TOTE_ART_URL = 'https://example.com/good-manners.png';
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  let session; const submitted = [];
+  const fulfill = load('src/lib/fulfill-tote.ts', {
+    './shop': shop, './inkthreadable': { ...supplier, submitSupplierOrder: async order => { submitted.push(order); return '789'; } },
+    './shop-orders': { claimOrder: async () => ({ acquired: true, record: { sessionId: session.id, state: 'submitting' }, etag: 'one' }), saveOrder: async () => {} },
+  }).fulfillTote;
+  const stripe = { checkout: { sessions: { retrieve: async () => session } } };
+  for (const size of shop.SHIRT_SIZES) {
+    session = fixture({ metadata: { website_slug: shop.SHIRT_SLUG, website_size: size }, amount_total: 2499,
+      line_items: { data: [{ quantity: 1, amount_total: 2499, price: { id: 'price_shirt' } }] } });
+    await fulfill(stripe, session.id);
+    const item = submitted.at(-1).items[0];
+    assert.equal(item.pn, `STTW079-BLK-${size}`); assert.equal(item.retailPrice, 24.99);
+    assert.equal(item.designs[0].src, 'https://example.com/good-manners.png');
+    assert.match(item.description, /260 mm wide by 300 mm/);
+  }
+  for (const bad of [undefined, '', '4XL', 'M;other-sku', ['M']]) {
+    session.metadata.website_size = bad;
+    await assert.rejects(fulfill(stripe, session.id));
+  }
+  session.metadata.website_size = 'M'; session.line_items.data[0].price.id = 'price_original';
+  await assert.rejects(fulfill(stripe, session.id)); assert.equal(submitted.length, 7);
+});
+
+test('shirt US delivery covers the shirt-specific duty on the full sale', () => {
+  const postage = [1038, 1614, 1614, 1897, 2345, 2394];
+  for (let q = 1; q <= 6; q++) {
+    const fee = shop.deliveryQuote('US', q, shop.SHIRT_SLUG).amount;
+    const duty = (2499 * q + fee) * .265;
+    assert.ok(fee + 288 * q >= postage[q - 1] + duty);
+    assert.ok(fee + 288 * q < postage[q - 1] + duty + 1);
+  }
+});
+
+test('checkout requires a valid shirt size and binds size to metadata and idempotency', async () => {
+  for (const key of ['STRIPE_RESTRICTED_KEY','STRIPE_WEBHOOK_SECRET','STRIPE_GOOD_MANNERS_SHIRT_PRICE_ID','STRIPE_GOOD_MANNERS_SHIRT_PRODUCT_ID','INKTHREADABLE_APP_ID','INKTHREADABLE_SECRET','INKTHREADABLE_TOTE_ART_URL','INKTHREADABLE_BRAND','BLOB_READ_WRITE_TOKEN']) process.env[key] = 'fixture';
+  process.env.SHOP_CHECKOUT_ENABLED = process.env.SHOP_FULFILLMENT_ENABLED = 'true';
+  const sessions = [];
+  const { POST } = load('src/app/api/shop/checkout/route.ts', {
+    '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({ checkout: { sessions: { create: async (params, options) => { sessions.push({params, options}); return { livemode: true, url: 'https://checkout.stripe.com/fixture' }; } } } }) },
+  });
+  const request = body => new Request(shop.SHOP_URL + '/api/shop/checkout', { method: 'POST', headers: { origin: shop.SHOP_URL }, body: JSON.stringify(body) });
+  const body = { productSlug: shop.SHIRT_SLUG, country: 'GB', quantity: 1, requestId: '11111111-1111-1111-1111-111111111111' };
+  for (const size of [undefined, '', '4XL', ['M']]) assert.equal((await POST(request({...body, size}))).status, 400);
+  for (const size of ['XS','3XL']) {
+    assert.equal((await POST(request({...body, size, price: 1}))).status, 200);
+    const {params, options} = sessions.at(-1);
+    assert.equal(params.metadata.website_size, size);
+    assert.equal(params.payment_intent_data.metadata.website_size, size);
+    assert.equal(params.line_items[0].price, 'fixture');
+    assert.match(params.custom_text.submit.message, new RegExp(size));
+    assert.ok(options.idempotencyKey.includes('-'+size+'-'));
+  }
+  assert.notEqual(sessions[0].options.idempotencyKey, sessions[1].options.idempotencyKey);
+});

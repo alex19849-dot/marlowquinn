@@ -8,7 +8,7 @@ const money = (pence: number) => new Intl.NumberFormat('en-GB', { style: 'curren
 const names = new Intl.DisplayNames(['en-GB'], { type: 'region' });
 const countries = SHOP_COUNTRIES.map(code => ({ code, name: names.of(code) || code })).sort((a, b) => a.code === 'GB' ? -1 : b.code === 'GB' ? 1 : a.name.localeCompare(b.name));
 
-export default function ToteCheckout({ enabled, productSlug = TOTE_SLUG }: { enabled: boolean; productSlug?: string }) {
+export default function ToteCheckout({ enabled, productSlug = TOTE_SLUG, colour = 'black', onColourChange }: { enabled: boolean; productSlug?: string; colour?: 'black' | 'white'; onColourChange?: (colour: 'black' | 'white') => void }) {
   const product = getToteProduct(productSlug)!;
   const shirt = product.kind === 'shirt';
   const [size, setSize] = useState('');
@@ -25,7 +25,7 @@ export default function ToteCheckout({ enabled, productSlug = TOTE_SLUG }: { ena
     setPending(true); setError('');
     requestId.current ||= crypto.randomUUID();
     try {
-      const response = await fetch('/api/shop/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ country, quantity, productSlug, size: shirt ? size : undefined, requestId: requestId.current }), signal: AbortSignal.timeout(25000) });
+      const response = await fetch('/api/shop/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ country, quantity, productSlug, colour, size: shirt ? size : undefined, requestId: requestId.current }), signal: AbortSignal.timeout(25000) });
       const result = await response.json();
       if (!response.ok || typeof result.url !== 'string') throw new Error(result.message || 'Checkout could not open. Please try again.');
       const url = new URL(result.url);
@@ -39,6 +39,7 @@ export default function ToteCheckout({ enabled, productSlug = TOTE_SLUG }: { ena
 
   if (!enabled) return <div className="shop-launch"><span className="shop-status">Coming soon</span><p>{money(product.pricePence)} with UK tracked delivery included. International delivery will be calculated at checkout.</p><Link href="/newsletter" className="button-primary">Keep me in the loop</Link></div>;
   return <form className="shop-launch tote-checkout" onSubmit={checkout}>
+    {onColourChange && <div className="shirt-size-field"><label htmlFor="product-colour">Colour</label><select id="product-colour" value={colour} disabled={pending} onChange={event => { onColourChange(event.target.value as 'black' | 'white'); requestId.current = ''; setError(''); }}><option value="black">Black</option><option value="white">White</option></select></div>}
     <p className="tote-price">{money(product.pricePence)} <span>per {shirt ? 'T-shirt' : 'tote'}</span></p>
     {shirt && <div className="shirt-size-field"><label htmlFor="shirt-size">Size</label><select id="shirt-size" required value={size} disabled={pending} onChange={event => { setSize(event.target.value); requestId.current = ''; setError(''); }}><option value="" disabled>Choose your size</option>{SHIRT_SIZES.map(value => <option key={value} value={value}>{value}</option>)}</select><a className="text-link" href="#size-guide">Check the size guide</a><p className="fine-print">Women’s fitted cut. Compare the measurements with a T-shirt you already own.</p></div>}
     <div className="tote-checkout-fields"><div><label htmlFor="tote-country">Deliver to</label><select id="tote-country" value={country} disabled={pending} onChange={event => { setCountry(event.target.value); requestId.current = ''; setError(''); }}>{countries.map(item => <option key={item.code} value={item.code}>{item.name}</option>)}</select></div><div><label htmlFor="tote-quantity">Quantity</label><select id="tote-quantity" value={quantity} disabled={pending} onChange={event => { setQuantity(Number(event.target.value)); requestId.current = ''; setError(''); }}>{Array.from({ length: MAX_TOTE_QUANTITY }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></div></div>

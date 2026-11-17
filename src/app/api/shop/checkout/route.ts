@@ -1,5 +1,5 @@
 import type Stripe from 'stripe';
-import { checkoutReady, deliveryQuote, getToteProduct, SHOP_URL, TOTE_SLUG, validShirtSize } from '@/lib/shop';
+import { checkoutReady, deliveryQuote, getToteProduct, SHOP_URL, TOTE_SLUG, validShirtSize, getProductColour } from '@/lib/shop';
 import { stripeClient } from '@/lib/stripe';
 
 export const runtime = 'nodejs';
@@ -14,6 +14,8 @@ export async function POST(request: Request) {
     const slug = body?.productSlug === undefined ? TOTE_SLUG : body.productSlug;
     const product = typeof slug === 'string' ? getToteProduct(slug) : undefined;
     if (!product) return Response.json({ message: 'Please choose a product from the shop.' }, { status: 400 });
+    const colour = getProductColour(product.slug, body?.colour);
+    if (!colour) return Response.json({ message: 'Please choose an available colour.' }, { status: 400 });
     const size = product.kind === 'shirt' ? body?.size : undefined;
     if (product.kind === 'shirt' && !validShirtSize(size)) return Response.json({ message: 'Please choose a T-shirt size.' }, { status: 400 });
     if (!checkoutReady(product.slug)) return Response.json({ message: 'This product is not available to order yet.' }, { status: 503 });
@@ -32,10 +34,10 @@ export async function POST(request: Request) {
       automatic_tax: { enabled: false },
       success_url: `${SHOP_URL}/shop/thank-you?session_id={CHECKOUT_SESSION_ID}`,
       cancel_url: `${SHOP_URL}/shop/${product.slug}`,
-      metadata: { website_slug: product.slug, delivery_country: country, ...(size ? { website_size: size } : {}) },
-      payment_intent_data: { metadata: { website_slug: product.slug, ...(size ? { website_size: size } : {}) } },
-      custom_text: { ...(size ? { submit: { message: `Your selection: Black, size ${size}. Please check the size guide before paying.` } } : {}), shipping_address: { message: country === 'US' ? 'Your delivery charge includes US import duty.' : country === 'GB' ? 'UK tracked delivery is included.' : 'Local import taxes or duties may be payable on delivery.' } },
-    }, { idempotencyKey: `tote-${product.slug}-${size || 'one-size'}-${country}-${quantity}-${requestId}` });
+      metadata: { website_slug: product.slug, website_colour: colour, delivery_country: country, ...(size ? { website_size: size } : {}) },
+      payment_intent_data: { metadata: { website_slug: product.slug, website_colour: colour, ...(size ? { website_size: size } : {}) } },
+      custom_text: { submit: { message: `Your selection: ${colour === 'white' ? 'White' : 'Black'}${size ? ', size ' + size + '. Please check the size guide before paying.' : '.'}` }, shipping_address: { message: country === 'US' ? 'Your delivery charge includes US import duty.' : country === 'GB' ? 'UK tracked delivery is included.' : 'Local import taxes or duties may be payable on delivery.' } },
+    }, { idempotencyKey: `tote-${product.slug}-${colour}-${size || 'one-size'}-${country}-${quantity}-${requestId}` });
     if (!session.url || !session.livemode) throw new Error('Live checkout is unavailable.');
     return Response.json({ url: session.url });
   } catch {

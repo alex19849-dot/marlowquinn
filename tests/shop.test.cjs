@@ -224,3 +224,58 @@ test('Fictional Men shirt keeps its own payment and print while preserving size'
   assert.ok(submitted[0].items[0].mockups[0].src.endsWith('fictional-men-shirt-detail.webp'));
   assert.equal(submitted[0].items[0].retailPrice, 24.99);
 });
+
+test('sports orders preserve design, colour, garment, size and the matching mockup', async () => {
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  let session; const submitted = [];
+  const fulfill = load('src/lib/fulfill-tote.ts', {
+    './shop': shop, './inkthreadable': { ...supplier, submitSupplierOrder: async order => { submitted.push(order); return '991'; } },
+    './shop-orders': { claimOrder: async () => ({ acquired: true, record: { sessionId: session.id, state: 'submitting' }, etag: 'one' }), saveOrder: async () => {} },
+  }).fulfillTote;
+  const stripe = { checkout: { sessions: { retrieve: async () => session } } };
+  for (const product of shop.SPORTS_PRODUCTS) {
+    process.env[product.priceEnv] = 'price_'+product.slug;
+    process.env[product.artEnv] = 'https://example.com/'+product.sport+'.png';
+    for (const colour of ['black','white']) for (const size of product.kind === 'shirt' ? shop.SHIRT_SIZES : [undefined]) {
+      session = fixture({ metadata: { website_slug: product.slug, website_colour: colour, website_size: size }, amount_total: product.pricePence,
+        line_items: { data: [{ quantity: 1, amount_total: product.pricePence, price: { id: process.env[product.priceEnv] } }] } });
+      await fulfill(stripe, session.id);
+      const item = submitted.at(-1).items[0], code = colour === 'white' ? 'WHI' : 'BLK';
+      assert.equal(item.pn, product.kind === 'shirt' ? `STTW079-${code}-${size}` : `STAU773-${code}`);
+      assert.equal(item.designs[0].src, 'https://example.com/'+product.sport+'.png');
+      assert.ok(item.mockups[0].src.endsWith(product.imagePrefix+'-'+colour+'-detail.webp'));
+    }
+    const count = submitted.length;
+    for (const bad of [undefined, 'natural', 'White', '', ['white'], 'white-SKU']) {
+      session.metadata.website_colour = bad;
+      await assert.rejects(fulfill(stripe, session.id));
+    }
+    session.metadata.website_colour = 'black';session.line_items.data[0].price.id = 'price_wrong_design';
+    await assert.rejects(fulfill(stripe, session.id));assert.equal(submitted.length, count);
+  }
+  assert.equal(submitted.length, 32);
+  assert.equal(shop.getProductColour(shop.TOTE_SLUG, undefined), 'black');
+  assert.equal(shop.getProductColour(shop.SHIRT_SLUG, 'white'), undefined);
+});
+
+test('checkout validates sports colours and keeps colour changes in separate sessions', async () => {
+  for (const key of ['STRIPE_RESTRICTED_KEY','STRIPE_WEBHOOK_SECRET','INKTHREADABLE_APP_ID','INKTHREADABLE_SECRET','INKTHREADABLE_BRAND','INKTHREADABLE_TOTE_PN','BLOB_READ_WRITE_TOKEN']) process.env[key] = 'fixture';
+  process.env.SHOP_CHECKOUT_ENABLED = process.env.SHOP_FULFILLMENT_ENABLED = 'true';
+  const sessions=[];
+  const { POST } = load('src/app/api/shop/checkout/route.ts', {
+    '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({checkout:{sessions:{create:async(params,options)=>{sessions.push({params,options});return{livemode:true,url:'https://checkout.stripe.com/fixture'};}}}}) },
+  });
+  const request=body=>new Request(shop.SHOP_URL+'/api/shop/checkout',{method:'POST',headers:{origin:shop.SHOP_URL},body:JSON.stringify(body)});
+  for(const product of shop.SPORTS_PRODUCTS){
+    process.env[product.priceEnv]='price_'+product.slug;process.env[product.productEnv]='prod_fixture';process.env[product.artEnv]='https://example.com/print.png';
+    const body={productSlug:product.slug,size:'3XL',country:'GB',quantity:1,requestId:'11111111-1111-1111-1111-111111111111'};
+    for(const colour of [undefined,'natural',['white'],'WHITE'])assert.equal((await POST(request({...body,colour}))).status,400);
+    const start=sessions.length;
+    for(const colour of ['black','white']){
+      assert.equal((await POST(request({...body,colour,pn:'attacker-sku',price:1}))).status,200);
+      const {params}=sessions.at(-1);assert.equal(params.metadata.website_colour,colour);assert.equal(params.payment_intent_data.metadata.website_colour,colour);
+      assert.equal(params.line_items[0].price,'price_'+product.slug);assert.match(params.custom_text.submit.message,new RegExp(colour==='white'?'White':'Black'));
+    }
+    assert.notEqual(sessions[start].options.idempotencyKey,sessions[start+1].options.idempotencyKey);
+  }
+});

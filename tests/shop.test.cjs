@@ -202,3 +202,25 @@ test('checkout requires a valid shirt size and binds size to metadata and idempo
   }
   assert.notEqual(sessions[0].options.idempotencyKey, sessions[1].options.idempotencyKey);
 });
+
+
+test('Fictional Men shirt keeps its own payment and print while preserving size', async () => {
+  process.env.STRIPE_FICTIONAL_SHIRT_PRICE_ID = 'price_fictional_shirt';
+  process.env.INKTHREADABLE_FICTIONAL_MEN_ART_URL = 'https://example.com/fictional-shirt.png';
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  const session = fixture({ metadata: { website_slug: shop.FICTIONAL_SHIRT_SLUG, website_size: '3XL' }, amount_total: 2499,
+    line_items: { data: [{ quantity: 1, amount_total: 2499, price: { id: 'price_good_manners_shirt' } }] } });
+  const submitted = [];
+  const fulfill = load('src/lib/fulfill-tote.ts', {
+    './shop': shop, './inkthreadable': { ...supplier, submitSupplierOrder: async order => { submitted.push(order); return '891'; } },
+    './shop-orders': { claimOrder: async () => ({ acquired: true, record: { sessionId: session.id, state: 'submitting' }, etag: 'one' }), saveOrder: async () => {} },
+  }).fulfillTote;
+  const stripe = { checkout: { sessions: { retrieve: async () => session } } };
+  await assert.rejects(fulfill(stripe, session.id)); assert.equal(submitted.length, 0);
+  session.line_items.data[0].price.id = 'price_fictional_shirt';
+  await fulfill(stripe, session.id);
+  assert.equal(submitted[0].items[0].pn, 'STTW079-BLK-3XL');
+  assert.equal(submitted[0].items[0].designs[0].src, 'https://example.com/fictional-shirt.png');
+  assert.ok(submitted[0].items[0].mockups[0].src.endsWith('fictional-men-shirt-detail.webp'));
+  assert.equal(submitted[0].items[0].retailPrice, 24.99);
+});

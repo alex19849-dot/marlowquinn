@@ -13,6 +13,7 @@ const descriptions = [
   'A perfectly respectable bag for your entirely unrespectable reading list. Ivory and magenta lettering, a shelf of rainbow books and absolutely no explanation owed.',
   'You had things to do. Then he appeared on the page. Ivory, magenta and rainbow lettering for readers whose favourite men live between the covers.',
   'Perfectly polite. Questionable reading material. Your favourite bookshelf confession on a fitted black organic cotton T-shirt, with rainbow books. XS to 3XL.',
+  'You had things to do. Then he appeared on the page. Rainbow lettering and a bookish confession on a fitted black organic cotton T-shirt. XS to 3XL.',
 ];
 export default function ShopPage() {
   return <main id="main-content" className="page-width shop-page">

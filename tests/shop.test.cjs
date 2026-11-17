@@ -279,3 +279,75 @@ test('checkout validates sports colours and keeps colour changes in separate ses
     assert.notEqual(sessions[start].options.idempotencyKey,sessions[start+1].options.idempotencyKey);
   }
 });
+
+
+test('mug delivery uses 150 g bands, its included UK allowance, courier thresholds and ceramic duty', () => {
+  const slug = shop.MUG_PRODUCT.slug;
+  for (const q of [1, 2, 3, 4, 5, 6]) assert.equal(shop.deliveryQuote('GB', q, slug).amount, 0);
+  for (const [country, postage] of Object.entries({
+    DE: [1086,1086,1327,1327,2389,2389], ES: [1303,1303,1592,1592,2389,2389],
+    CA: [1499,1499,1499,1499,3780,3780], AU: [2006,2006,3050,3050,3780,3780],
+  })) for (let q = 1; q <= 6; q++) {
+    const quote = shop.deliveryQuote(country, q, slug);
+    assert.equal(quote.amount, Math.max(0, postage[q - 1] - 378 * q));
+    assert.equal(quote.label.includes('courier'), q >= 5);
+  }
+  const postage = [1489,1614,1897,2394,3780,3780];
+  for (let q = 1; q <= 6; q++) {
+    const fee = shop.deliveryQuote('US', q, slug).amount;
+    const duty = (1299 * q + fee) * 0.185;
+    assert.ok(fee + 378 * q >= postage[q - 1] + duty);
+    assert.ok(fee + 378 * q < postage[q - 1] + duty + 1);
+  }
+});
+
+test('paid mug orders use white ceramic, the two-sided wrap and appropriate carrier; forged selections fail', async () => {
+  const product = shop.MUG_PRODUCT;
+  process.env[product.priceEnv] = 'price_mug';
+  process.env[product.artEnv] = 'https://example.com/mug-wrap.png';
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  let session; const submitted = [];
+  const fulfill = load('src/lib/fulfill-tote.ts', {
+    './shop': shop, './inkthreadable': { ...supplier, submitSupplierOrder: async order => { submitted.push(order); return '992'; } },
+    './shop-orders': { claimOrder: async () => ({ acquired: true, record: { sessionId: session.id, state: 'submitting' }, etag: 'one' }), saveOrder: async () => {} },
+  }).fulfillTote;
+  const stripe = { checkout: { sessions: { retrieve: async () => session } } };
+  for (const country of ['GB','DE','US']) for (let q = 1; q <= 6; q++) {
+    const fee = shop.deliveryQuote(country, q, product.slug).amount;
+    session = fixture({ metadata: { website_slug: product.slug, website_colour: 'white' }, amount_total: 1299*q+fee, total_details: { amount_shipping: fee },
+      collected_information: { shipping_details: { name: 'Test Buyer', address: { line1: '1 Test Road', city: 'Test City', country } } },
+      line_items: { data: [{ quantity: q, amount_total: 1299*q, price: { id: 'price_mug' } }] } });
+    await fulfill(stripe, session.id);
+    const order = submitted.at(-1), item = order.items[0];
+    assert.equal(item.pn, 'MUG-CER-WHI'); assert.equal(item.quantity, q); assert.equal(item.retailPrice, 12.99);
+    assert.equal(item.designs[0].src, 'https://example.com/mug-wrap.png'); assert.equal(item.designs[0].title, 'Printing Mug');
+    assert.match(item.description, /200 x 90 mm/); assert.match(item.description, /both sides/);
+    assert.ok(item.mockups[0].src.endsWith('sweet-romance-mug-model.webp'));
+    assert.equal(order.shipping.shippingMethod, country !== 'GB' && q >= 5 ? 'courier' : 'recorded');
+  }
+  const count = submitted.length;
+  for (const colour of [undefined, 'black', '', 'White']) {
+    session.metadata.website_colour = colour;
+    await assert.rejects(fulfill(stripe, session.id));
+  }
+  session.metadata.website_colour = 'white'; session.line_items.data[0].price.id = 'price_wrong';
+  await assert.rejects(fulfill(stripe, session.id)); assert.equal(submitted.length, count);
+});
+
+test('mug checkout charges the fixed mug price and carries white selection through Stripe', async () => {
+  for (const key of ['STRIPE_RESTRICTED_KEY','STRIPE_WEBHOOK_SECRET','INKTHREADABLE_APP_ID','INKTHREADABLE_SECRET','INKTHREADABLE_BRAND','BLOB_READ_WRITE_TOKEN']) process.env[key] = 'fixture';
+  process.env.SHOP_CHECKOUT_ENABLED = process.env.SHOP_FULFILLMENT_ENABLED = 'true';
+  const product = shop.MUG_PRODUCT;
+  process.env[product.priceEnv] = 'price_mug'; process.env[product.productEnv] = 'prod_mug'; process.env[product.artEnv] = 'https://example.com/mug.png';
+  const sessions = [];
+  const { POST } = load('src/app/api/shop/checkout/route.ts', {
+    '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({checkout:{sessions:{create:async(params)=>{sessions.push(params);return{livemode:true,url:'https://checkout.stripe.com/fixture'};}}}}) },
+  });
+  const request = body => new Request(shop.SHOP_URL+'/api/shop/checkout', { method:'POST', headers:{origin:shop.SHOP_URL}, body:JSON.stringify(body) });
+  const body = {productSlug:product.slug,country:'GB',quantity:1,colour:'white',requestId:'11111111-1111-1111-1111-111111111111',price:1,pn:'wrong'};
+  assert.equal((await POST(request({...body,colour:'black'}))).status,400);
+  assert.equal((await POST(request(body))).status,200);
+  assert.equal(sessions[0].line_items[0].price,'price_mug');
+  assert.equal(sessions[0].metadata.website_colour,'white'); assert.match(sessions[0].custom_text.submit.message,/White/);
+  assert.equal(sessions[0].shipping_options[0].shipping_rate_data.fixed_amount.amount,0);
+});

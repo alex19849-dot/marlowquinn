@@ -376,3 +376,28 @@ test('rainbow mug keeps its own print file, mockup and price when fulfilled', as
   await assert.rejects(fulfill(stripe, session.id));
   assert.equal(submitted.length, 1);
 });
+
+test('vampire tote keeps its selected print and price, and rejects a different tote price', async () => {
+  const product = shop.VAMPIRE_TOTE_PRODUCT;
+  process.env[product.priceEnv] = 'price_vampire_tote';
+  process.env[product.artEnv] = 'https://example.com/vampire-boyfriend-tote-print.png';
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  const submitted = [];
+  const session = fixture({ metadata: { website_slug: product.slug, website_colour: 'black' }, amount_total: 1999, total_details: { amount_shipping: 0 },
+    collected_information: { shipping_details: { name: 'Test Buyer', address: { line1: '1 Test Road', city: 'Test City', country: 'GB' } } },
+    line_items: { data: [{ quantity: 1, amount_total: 1999, price: { id: 'price_vampire_tote' } }] } });
+  const fulfill = load('src/lib/fulfill-tote.ts', {
+    './shop': shop, './inkthreadable': { ...supplier, submitSupplierOrder: async order => { submitted.push(order); return '994'; } },
+    './shop-orders': { claimOrder: async () => ({ acquired: true, record: { sessionId: session.id, state: 'submitting' }, etag: 'one' }), saveOrder: async () => {} },
+  }).fulfillTote;
+  const stripe = { checkout: { sessions: { retrieve: async () => session } } };
+  await fulfill(stripe, session.id);
+  const item = submitted[0].items[0];
+  assert.equal(item.pn, process.env.INKTHREADABLE_TOTE_PN);
+  assert.equal(item.designs[0].src, 'https://example.com/vampire-boyfriend-tote-print.png');
+  assert.equal(item.designs[0].title, 'Printing Front - DTG');
+  assert.ok(item.mockups[0].src.endsWith('vampire-boyfriend-tote-detail.webp'));
+  session.line_items.data[0].price.id = process.env[shop.TOTE_PRODUCTS[0].priceEnv];
+  await assert.rejects(fulfill(stripe, session.id));
+  assert.equal(submitted.length, 1);
+});

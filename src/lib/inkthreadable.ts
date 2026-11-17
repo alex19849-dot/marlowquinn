@@ -1,7 +1,10 @@
 import { createHash } from 'node:crypto';
 import type Stripe from 'stripe';
+import { getToteProduct } from './shop';
 
 export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: number) {
+  const product = getToteProduct(session.metadata?.website_slug || '');
+  if (!product) throw new Error('Unknown tote design.');
   const shipping = session.collected_information?.shipping_details;
   const address = shipping?.address;
   if (!shipping?.name || !address?.line1 || !address.country || !address.city) throw new Error('Shipping details are incomplete.');
@@ -23,8 +26,8 @@ export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: n
     items: [{
       pn: process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: 19.99, retailCurrency: 'GBP',
       description: 'Front DTG print, centred, 220 mm wide. Preserve the artwork aspect ratio.',
-      designs: [{ title: 'Printing Front - DTG', src: process.env.INKTHREADABLE_TOTE_ART_URL }],
-      mockups: [{ title: 'Printing Front - DTG', src: 'https://www.marlowquinn.com/shop/filthy-bookshelf-detail.webp' }],
+      designs: [{ title: 'Printing Front - DTG', src: process.env[product.artEnv] }],
+      mockups: [{ title: 'Printing Front - DTG', src: `https://www.marlowquinn.com/shop/${product.imagePrefix}-detail.webp` }],
     }],
   };
 }

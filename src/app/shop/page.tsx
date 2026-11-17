@@ -6,7 +6,7 @@ import { checkoutReady, SHOP_PRODUCTS, hasColourOptions, productImagePrefix } fr
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'The Bookish Shop',
-  description: 'Cheeky organic cotton T-shirts and totes for readers distracted by fictional men and filthy bookshelves. Shop the Marlow Quinn bookish collection.',
+  description: 'Cheeky bookish mugs, organic cotton T-shirts and totes for readers distracted by fictional men and filthy bookshelves. Shop the Marlow Quinn bookish collection.',
   alternates: { canonical: '/shop' },
 };
 const descriptions = [
@@ -18,6 +18,7 @@ const descriptions = [
   'For the hockey players who live rent-free in your reading list. Fitted organic cotton, black or white, XS to 3XL.',
   'Here for the plot. And the quarterback’s thighs. American football romance, carried with absolutely no shame. Black or white.',
   'A very respectable interest in American football. And thighs. Fitted organic cotton, black or white, XS to 3XL.',
+  'Sweet romance. Filthy chapters. A glossy white ceramic mug for your favourite brew and your least innocent reading list. Roses, rich burgundy lettering and an open book.',
 ];
 export default function ShopPage() {
   return <main id="main-content" className="page-width shop-page">
@@ -28,26 +29,28 @@ export default function ShopPage() {
       <a className="text-link" href="#collection">Find your next bookish favourite <span aria-hidden="true">↓</span></a>
     </section>
     <section id="collection" aria-labelledby="collection-heading">
-      <div className="section-heading"><div><p className="eyebrow">Pick your kind of trouble</p><h2 id="collection-heading">Wear it. Carry it. Own it.</h2></div></div>
+      <div className="section-heading"><div><p className="eyebrow">Pick your kind of trouble</p><h2 id="collection-heading">Wear it. Carry it. Sip it.</h2></div></div>
       <div className="shop-collection">{SHOP_PRODUCTS.map((product, index) => {
         const open = checkoutReady(product.slug);
+        const mug = product.kind === 'mug';
+        const type = product.kind === 'shirt' ? 'T-shirt' : mug ? 'mug' : 'tote';
         return <article className="shop-product-card" key={product.slug}>
-          <Link className="shop-feature-photo" href={'/shop/'+product.slug} aria-label={'Explore the '+product.name+' '+(product.kind === 'shirt' ? 'T-shirt' : 'tote')}>
-            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={(product.kind === 'shirt' ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+' organic cotton '+(product.kind === 'shirt' ? 'T-shirt' : 'tote')} width={1157} height={1359} priority={index === 0} sizes="(max-width:767px) calc(100vw - 36px), (max-width:1200px) 45vw, 575px"/>
+          <Link className="shop-feature-photo" href={'/shop/'+product.slug} aria-label={'Explore the '+product.name+' '+type}>
+            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'Glossy white Sweet Romance, Filthy Chapters ceramic mug with burgundy lettering, roses and an open book' : (product.kind === 'shirt' ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+' organic cotton '+type} width={1157} height={1359} priority={index === 0} sizes="(max-width:767px) calc(100vw - 36px), (max-width:1200px) 45vw, 575px"/>
             <span className="shop-photo-badge">{open ? 'Available now' : 'Coming soon'}</span>
           </Link>
           <div className="shop-product-card-body">
-            <p className="eyebrow">{product.kind === 'shirt' ? 'Fitted T-shirt · '+(hasColourOptions(product.slug) ? 'Black or white' : 'Black')+' · XS to 3XL' : 'The bookish tote · '+(hasColourOptions(product.slug) ? 'Black or white' : 'Black')}</p><h3>{product.name}{product.kind === 'shirt' ? ' T-shirt' : hasColourOptions(product.slug) ? ' Tote' : ''}</h3><p>{descriptions[index]}</p>
+            <p className="eyebrow">{mug ? 'The bookish mug · White · 11oz' : product.kind === 'shirt' ? 'Fitted T-shirt · '+(hasColourOptions(product.slug) ? 'Black or white' : 'Black')+' · XS to 3XL' : 'The bookish tote · '+(hasColourOptions(product.slug) ? 'Black or white' : 'Black')}</p><h3>{product.name}{mug ? ' Mug' : product.kind === 'shirt' ? ' T-shirt' : hasColourOptions(product.slug) ? ' Tote' : ''}</h3><p>{descriptions[index]}</p>
             <p className="shop-card-price">£{(product.pricePence / 100).toFixed(2)} <span>including UK tracked delivery</span></p>
-            <Link href={'/shop/'+product.slug} className="button-primary">{open ? (product.kind === 'shirt' ? 'Shop this T-shirt' : 'Shop this tote') : 'Take a closer look'} <span aria-hidden="true">→</span></Link>
+            <Link href={'/shop/'+product.slug} className="button-primary">{open ? (mug ? 'Shop this mug' : product.kind === 'shirt' ? 'Shop this T-shirt' : 'Shop this tote') : 'Take a closer look'} <span aria-hidden="true">→</span></Link>
           </div>
         </article>;
       })}</div>
-      <p className="fine-print shop-note">Made to order in organic cotton. International delivery is calculated by destination and quantity on each product page.</p>
+      <p className="fine-print shop-note">Made to order, from organic cotton favourites to glossy ceramic mugs. International delivery is calculated by destination and quantity on each product page.</p>
     </section>
     <section className="shop-next" aria-labelledby="next-heading">
       <div><p className="eyebrow">A little more temptation</p><h2 id="next-heading">Your reading habit.<br/>Soon, on everything.</h2></div>
-      <div><p>Totes and T-shirts are here. Cheeky mugs are next, with the same love of books, fictional men and questionable decisions.</p><Link href="/newsletter" className="text-link">Join the reader list for shop news <span aria-hidden="true">→</span></Link></div>
+      <div><p>Totes, T-shirts and mugs are here, with the same love of books, fictional men and questionable decisions. More bookish temptations are on the way.</p><Link href="/newsletter" className="text-link">Join the reader list for shop news <span aria-hidden="true">→</span></Link></div>
     </section>
   </main>;
 }

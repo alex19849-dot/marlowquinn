@@ -7,6 +7,9 @@ export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: n
   if (!product) throw new Error('Unknown product.');
   const colour = getProductColour(product.slug, session.metadata?.website_colour);
   if (!colour) throw new Error('Invalid product colour.');
+  const mug = product.kind === 'mug';
+  const decoration = mug ? 'Printing Mug' : 'Printing Front - DTG';
+  const courier = mug && quantity >= 5 && session.collected_information?.shipping_details?.address?.country !== 'GB';
   const colourCode = colour === 'white' ? 'WHI' : 'BLK';
   const size = session.metadata?.website_size;
   if (product.kind === 'shirt' && !validShirtSize(size)) throw new Error('Invalid shirt size.');
@@ -27,12 +30,12 @@ export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: n
       county: address.state || '', postcode: address.postal_code || '', country,
       phone1: session.customer_details?.phone || '',
     },
-    shipping: { shippingMethod: 'recorded' },
+    shipping: { shippingMethod: courier ? 'courier' : 'recorded' },
     items: [{
-      pn: product.kind === 'shirt' ? `STTW079-${colourCode}-${size}` : hasColourOptions(product.slug) ? `STAU773-${colourCode}` : process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: product.pricePence / 100, retailCurrency: 'GBP',
-      description: product.kind === 'shirt' ? `${colour === 'white' ? 'White' : 'Black'} Stella Expresser 2.0, size ${size}. Front DTG print, centred, maximum 260 mm wide by 300 mm high. Preserve the artwork aspect ratio.` : 'Front DTG print, centred, 220 mm wide. Preserve the artwork aspect ratio.',
-      designs: [{ title: 'Printing Front - DTG', src: process.env[product.artEnv] }],
-      mockups: [{ title: 'Printing Front - DTG', src: `https://www.marlowquinn.com/shop/${productImagePrefix(product.slug, colour)}-detail.webp` }],
+      pn: mug ? 'MUG-CER-WHI' : product.kind === 'shirt' ? `STTW079-${colourCode}-${size}` : hasColourOptions(product.slug) ? `STAU773-${colourCode}` : process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: product.pricePence / 100, retailCurrency: 'GBP',
+      description: mug ? '11oz glossy white ceramic mug. Dye sublimation. Print the supplied 200 x 90 mm wrap at its exact size, with the same design on both sides. Matches saved Inkthreadable design product 51778643. Do not stretch, crop or enlarge to fill the mug.' : product.kind === 'shirt' ? `${colour === 'white' ? 'White' : 'Black'} Stella Expresser 2.0, size ${size}. Front DTG print, centred, maximum 260 mm wide by 300 mm high. Preserve the artwork aspect ratio.` : 'Front DTG print, centred, 220 mm wide. Preserve the artwork aspect ratio.',
+      designs: [{ title: decoration, src: process.env[product.artEnv] }],
+      mockups: [{ title: decoration, src: `https://www.marlowquinn.com/shop/${productImagePrefix(product.slug, colour)}-${mug ? 'model' : 'detail'}.webp` }],
     }],
   };
 }

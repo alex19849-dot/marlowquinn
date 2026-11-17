@@ -1,10 +1,12 @@
 import { createHash } from 'node:crypto';
 import type Stripe from 'stripe';
-import { getToteProduct } from './shop';
+import { getToteProduct, validShirtSize } from './shop';
 
 export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: number) {
   const product = getToteProduct(session.metadata?.website_slug || '');
-  if (!product) throw new Error('Unknown tote design.');
+  if (!product) throw new Error('Unknown product.');
+  const size = session.metadata?.website_size;
+  if (product.kind === 'shirt' && !validShirtSize(size)) throw new Error('Invalid shirt size.');
   const shipping = session.collected_information?.shipping_details;
   const address = shipping?.address;
   if (!shipping?.name || !address?.line1 || !address.country || !address.city) throw new Error('Shipping details are incomplete.');
@@ -24,8 +26,8 @@ export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: n
     },
     shipping: { shippingMethod: 'recorded' },
     items: [{
-      pn: process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: 19.99, retailCurrency: 'GBP',
-      description: 'Front DTG print, centred, 220 mm wide. Preserve the artwork aspect ratio.',
+      pn: product.kind === 'shirt' ? `STTW079-BLK-${size}` : process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: product.pricePence / 100, retailCurrency: 'GBP',
+      description: product.kind === 'shirt' ? `Black Stella Expresser 2.0, size ${size}. Front DTG print, centred, maximum 260 mm wide by 300 mm high. Preserve the artwork aspect ratio.` : 'Front DTG print, centred, 220 mm wide. Preserve the artwork aspect ratio.',
       designs: [{ title: 'Printing Front - DTG', src: process.env[product.artEnv] }],
       mockups: [{ title: 'Printing Front - DTG', src: `https://www.marlowquinn.com/shop/${product.imagePrefix}-detail.webp` }],
     }],

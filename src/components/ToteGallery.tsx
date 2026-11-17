@@ -3,12 +3,13 @@
 import Image from 'next/image';
 import { useState } from 'react';
 
-const photos = [
+type ProductPhoto = { src: string; label: string; alt: string; width: number; height: number };
+const defaultPhotos = [
   { src: '/shop/filthy-bookshelf-model.webp', label: 'On the model', alt: 'Black Good Manners, Filthy Bookshelf tote carried over a model’s shoulder', width: 1157, height: 1359 },
   { src: '/shop/filthy-bookshelf-detail.webp', label: 'Print close-up', alt: 'Close-up of the black tote with ivory Good Manners lettering, magenta Filthy Bookshelf lettering and six rainbow books', width: 1254, height: 1254 },
 ];
 
-export default function ToteGallery() {
+export default function ToteGallery({ photos = defaultPhotos }: { photos?: readonly ProductPhoto[] }) {
   const [selected, setSelected] = useState(0);
   const photo = photos[selected];
   return <div className="tote-gallery">

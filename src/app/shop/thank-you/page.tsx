@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
 import { stripeClient } from '@/lib/stripe';
-import { TOTE_SLUG } from '@/lib/shop';
+import { getToteProduct } from '@/lib/shop';
 
 export const metadata: Metadata = { title: 'Your order', robots: { index: false, follow: false } };
 export const dynamic = 'force-dynamic';
@@ -13,7 +13,7 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
   if (session_id && /^cs_live_[a-zA-Z0-9]+$/.test(session_id)) {
     try {
       const session = await stripeClient().checkout.sessions.retrieve(session_id);
-      if (session.livemode && session.metadata?.website_slug === TOTE_SLUG) {
+      if (session.livemode && getToteProduct(session.metadata?.website_slug || '')) {
         paid = session.payment_status === 'paid';
         pending = session.status === 'complete' && session.payment_status === 'unpaid';
       }

@@ -2,13 +2,13 @@
 
 import { useRef, useState } from 'react';
 import Link from 'next/link';
-import { deliveryQuote, MAX_TOTE_QUANTITY, SHOP_COUNTRIES, TOTE_PRICE_PENCE } from '@/lib/shop';
+import { deliveryQuote, MAX_TOTE_QUANTITY, SHOP_COUNTRIES, TOTE_PRICE_PENCE, TOTE_SLUG } from '@/lib/shop';
 
 const money = (pence: number) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(pence / 100);
 const names = new Intl.DisplayNames(['en-GB'], { type: 'region' });
 const countries = SHOP_COUNTRIES.map(code => ({ code, name: names.of(code) || code })).sort((a, b) => a.code === 'GB' ? -1 : b.code === 'GB' ? 1 : a.name.localeCompare(b.name));
 
-export default function ToteCheckout({ enabled }: { enabled: boolean }) {
+export default function ToteCheckout({ enabled, productSlug = TOTE_SLUG }: { enabled: boolean; productSlug?: string }) {
   const [country, setCountry] = useState('GB');
   const [quantity, setQuantity] = useState(1);
   const [pending, setPending] = useState(false);
@@ -22,7 +22,7 @@ export default function ToteCheckout({ enabled }: { enabled: boolean }) {
     setPending(true); setError('');
     requestId.current ||= crypto.randomUUID();
     try {
-      const response = await fetch('/api/shop/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ country, quantity, requestId: requestId.current }), signal: AbortSignal.timeout(25000) });
+      const response = await fetch('/api/shop/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ country, quantity, productSlug, requestId: requestId.current }), signal: AbortSignal.timeout(25000) });
       const result = await response.json();
       if (!response.ok || typeof result.url !== 'string') throw new Error(result.message || 'Checkout could not open. Please try again.');
       const url = new URL(result.url);

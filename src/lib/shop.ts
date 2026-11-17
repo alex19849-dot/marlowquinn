@@ -1,4 +1,13 @@
 export const TOTE_SLUG = 'good-manners-filthy-bookshelf';
+export const FICTIONAL_MEN_SLUG = 'easily-distracted-by-fictional-men';
+export const TOTE_PRODUCTS = [
+  { slug: TOTE_SLUG, name: 'Good Manners. Filthy Bookshelf.', priceEnv: 'STRIPE_TOTE_PRICE_ID', productEnv: 'STRIPE_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_TOTE_ART_URL', imagePrefix: 'filthy-bookshelf' },
+  { slug: FICTIONAL_MEN_SLUG, name: 'Easily Distracted by Fictional Men', priceEnv: 'STRIPE_FICTIONAL_MEN_PRICE_ID', productEnv: 'STRIPE_FICTIONAL_MEN_PRODUCT_ID', artEnv: 'INKTHREADABLE_FICTIONAL_MEN_ART_URL', imagePrefix: 'fictional-men' },
+] as const;
+
+export function getToteProduct(slug: string) {
+  return TOTE_PRODUCTS.find(product => product.slug === slug);
+}
 export const TOTE_PRICE_PENCE = 1999;
 export const SHOP_URL = 'https://www.marlowquinn.com';
 export const EUROPE_ONE = ['AT', 'DE', 'FR', 'IT', 'NL'];
@@ -26,12 +35,14 @@ export function deliveryQuote(country: string, quantity = 1) {
   return { amount: Math.max(0, postage - 288 * quantity), label };
 }
 
-export function checkoutReady() {
+export function checkoutReady(slug = TOTE_SLUG) {
+  const product = getToteProduct(slug);
+  if (!product) return false;
   return process.env.SHOP_CHECKOUT_ENABLED === 'true' && process.env.SHOP_FULFILLMENT_ENABLED === 'true' && Boolean(
     process.env.STRIPE_RESTRICTED_KEY && process.env.STRIPE_WEBHOOK_SECRET &&
-    process.env.STRIPE_TOTE_PRICE_ID && process.env.STRIPE_TOTE_PRODUCT_ID &&
+    process.env[product.priceEnv] && process.env[product.productEnv] &&
     process.env.INKTHREADABLE_APP_ID && process.env.INKTHREADABLE_SECRET &&
-    process.env.INKTHREADABLE_TOTE_PN && process.env.INKTHREADABLE_TOTE_ART_URL &&
+    process.env.INKTHREADABLE_TOTE_PN && process.env[product.artEnv] &&
     process.env.INKTHREADABLE_BRAND && (process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN)
   );
 }

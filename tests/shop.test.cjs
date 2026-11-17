@@ -80,9 +80,33 @@ test('an ambiguous supplier timeout is held for review and never automatically r
 });
 
 test('addresses in countries without postcodes remain valid supplier orders', () => {
-  const { buildSupplierOrder } = load('src/lib/inkthreadable.ts');
+  const { buildSupplierOrder } = load('src/lib/inkthreadable.ts', { './shop': shop });
   const session = fixture(); session.collected_information.shipping_details.address = { line1: '1 Test Road', city: 'Hong Kong', country: 'HK' };
   assert.equal(buildSupplierOrder(session, 1).shipping_address.postcode, '');
+});
+
+test('the selected tote uses its own price and artwork, and a swapped price cannot be fulfilled', async () => {
+  process.env.STRIPE_TOTE_PRICE_ID = 'price_original';
+  process.env.STRIPE_FICTIONAL_MEN_PRICE_ID = 'price_fictional';
+  process.env.INKTHREADABLE_TOTE_ART_URL = 'https://example.com/original.png';
+  process.env.INKTHREADABLE_FICTIONAL_MEN_ART_URL = 'https://example.com/fictional.png';
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  let session = fixture({ metadata: { website_slug: shop.FICTIONAL_MEN_SLUG }, line_items: { data: [{ quantity: 1, amount_total: 1999, price: { id: 'price_original' } }] } });
+  const submitted = [];
+  const fulfill = load('src/lib/fulfill-tote.ts', {
+    './shop': shop,
+    './inkthreadable': { ...supplier, submitSupplierOrder: async order => { submitted.push(order); return '456'; } },
+    './shop-orders': { claimOrder: async () => ({ acquired: true, record: { sessionId: session.id, state: 'submitting' }, etag: 'one' }), saveOrder: async () => {} },
+  }).fulfillTote;
+  const stripe = { checkout: { sessions: { retrieve: async () => session } } };
+  await assert.rejects(fulfill(stripe, session.id)); assert.equal(submitted.length, 0);
+  session.line_items.data[0].price.id = 'price_fictional';
+  await fulfill(stripe, session.id);
+  assert.equal(submitted[0].items[0].designs[0].src, 'https://example.com/fictional.png');
+  assert.ok(submitted[0].items[0].mockups[0].src.endsWith('fictional-men-detail.webp'));
+  const original = fixture(); original.metadata.website_slug = shop.TOTE_SLUG;
+  assert.equal(supplier.buildSupplierOrder(original, 1).items[0].designs[0].src, 'https://example.com/original.png');
+  assert.equal(shop.getToteProduct('unrecognised-tote'), undefined);
 });
 
 test('the webhook rejects forged notifications and accepts only signed live shop events', async () => {

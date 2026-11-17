@@ -1,11 +1,12 @@
 import type Stripe from 'stripe';
-import { deliveryQuote, TOTE_PRICE_PENCE, TOTE_SLUG } from './shop';
+import { deliveryQuote, getToteProduct, TOTE_PRICE_PENCE } from './shop';
 import { buildSupplierOrder, submitSupplierOrder } from './inkthreadable';
 import { claimOrder, saveOrder } from './shop-orders';
 
 export async function fulfillTote(stripe: Stripe, sessionId: string) {
   const session = await stripe.checkout.sessions.retrieve(sessionId, { expand: ['line_items'] });
-  if (session.metadata?.website_slug !== TOTE_SLUG) return;
+  const product = getToteProduct(session.metadata?.website_slug || '');
+  if (!product) return;
   if (session.payment_status !== 'paid') return;
   if (!session.livemode) throw new Error('Test payments cannot create supplier orders.');
   const country = session.collected_information?.shipping_details?.address?.country || '';
@@ -14,7 +15,7 @@ export async function fulfillTote(stripe: Stripe, sessionId: string) {
   const quantity = item?.quantity || 0;
   const quote = deliveryQuote(country, quantity);
   if (session.currency !== 'gbp' || !quote || items?.length !== 1 ||
-    item?.price?.id !== process.env.STRIPE_TOTE_PRICE_ID || item?.amount_total !== TOTE_PRICE_PENCE * quantity ||
+    !process.env[product.priceEnv] || item?.price?.id !== process.env[product.priceEnv] || item?.amount_total !== TOTE_PRICE_PENCE * quantity ||
     session.amount_total !== TOTE_PRICE_PENCE * quantity + quote.amount || session.total_details?.amount_shipping !== quote.amount) {
     throw new Error('Paid order details require review.');
   }

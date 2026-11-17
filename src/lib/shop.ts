@@ -1,6 +1,7 @@
 export const TOTE_SLUG = 'good-manners-filthy-bookshelf';
 export const FICTIONAL_MEN_SLUG = 'easily-distracted-by-fictional-men';
 export const SHIRT_SLUG = 'good-manners-filthy-bookshelf-t-shirt';
+export const FICTIONAL_SHIRT_SLUG = 'easily-distracted-by-fictional-men-t-shirt';
 export const SHIRT_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'] as const;
 export const TOTE_PRODUCTS = [
   { slug: TOTE_SLUG, name: 'Good Manners. Filthy Bookshelf.', priceEnv: 'STRIPE_TOTE_PRICE_ID', productEnv: 'STRIPE_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_TOTE_ART_URL', imagePrefix: 'filthy-bookshelf', kind: 'tote', pricePence: 1999, usDutyPermille: 163 },
@@ -8,7 +9,8 @@ export const TOTE_PRODUCTS = [
 ] as const;
 
 export const SHIRT_PRODUCT = { slug: SHIRT_SLUG, name: 'Good Manners. Filthy Bookshelf.', priceEnv: 'STRIPE_GOOD_MANNERS_SHIRT_PRICE_ID', productEnv: 'STRIPE_GOOD_MANNERS_SHIRT_PRODUCT_ID', artEnv: 'INKTHREADABLE_TOTE_ART_URL', imagePrefix: 'good-manners-shirt', kind: 'shirt', pricePence: 2499, usDutyPermille: 265 } as const;
-export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT] as const;
+export const FICTIONAL_SHIRT_PRODUCT = { ...SHIRT_PRODUCT, slug: FICTIONAL_SHIRT_SLUG, name: 'Easily Distracted by Fictional Men', priceEnv: 'STRIPE_FICTIONAL_SHIRT_PRICE_ID', productEnv: 'STRIPE_FICTIONAL_SHIRT_PRODUCT_ID', artEnv: 'INKTHREADABLE_FICTIONAL_MEN_ART_URL', imagePrefix: 'fictional-men-shirt' } as const;
+export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT] as const;
 export function validShirtSize(size: unknown): size is typeof SHIRT_SIZES[number] {
   return typeof size === 'string' && (SHIRT_SIZES as readonly string[]).includes(size);
 }

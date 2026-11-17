@@ -1,3 +1,4 @@
+import { SPORTS_PRODUCTS } from '@/lib/shop';
 import { books } from "@/data/books";
 
 export default function sitemap() {
@@ -15,5 +16,5 @@ export default function sitemap() {
     lastModified: new Date(),
   }));
 
-  return [...staticPages, ...bookPages];
+  return [...staticPages, ...bookPages, ...SPORTS_PRODUCTS.map(product => ({ url: `${baseUrl}/shop/${product.slug}`, lastModified: new Date() }))];
 }

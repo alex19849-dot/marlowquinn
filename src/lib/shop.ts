@@ -10,7 +10,13 @@ export const TOTE_PRODUCTS = [
 
 export const SHIRT_PRODUCT = { slug: SHIRT_SLUG, name: 'Good Manners. Filthy Bookshelf.', priceEnv: 'STRIPE_GOOD_MANNERS_SHIRT_PRICE_ID', productEnv: 'STRIPE_GOOD_MANNERS_SHIRT_PRODUCT_ID', artEnv: 'INKTHREADABLE_TOTE_ART_URL', imagePrefix: 'good-manners-shirt', kind: 'shirt', pricePence: 2499, usDutyPermille: 265 } as const;
 export const FICTIONAL_SHIRT_PRODUCT = { ...SHIRT_PRODUCT, slug: FICTIONAL_SHIRT_SLUG, name: 'Easily Distracted by Fictional Men', priceEnv: 'STRIPE_FICTIONAL_SHIRT_PRICE_ID', productEnv: 'STRIPE_FICTIONAL_SHIRT_PRODUCT_ID', artEnv: 'INKTHREADABLE_FICTIONAL_MEN_ART_URL', imagePrefix: 'fictional-men-shirt' } as const;
-export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT] as const;
+export const SPORTS_PRODUCTS = [
+  { ...TOTE_PRODUCTS[0], slug: 'no-clean-thoughts-hockey-tote', name: 'Five Stars. No Clean Thoughts.', priceEnv: 'STRIPE_HOCKEY_TOTE_PRICE_ID', productEnv: 'STRIPE_HOCKEY_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_HOCKEY_ART_URL', imagePrefix: 'hockey-tote', sport: 'hockey' },
+  { ...SHIRT_PRODUCT, slug: 'no-clean-thoughts-hockey-t-shirt', name: 'Five Stars. No Clean Thoughts.', priceEnv: 'STRIPE_HOCKEY_SHIRT_PRICE_ID', productEnv: 'STRIPE_HOCKEY_SHIRT_PRODUCT_ID', artEnv: 'INKTHREADABLE_HOCKEY_ART_URL', imagePrefix: 'hockey-shirt', sport: 'hockey' },
+  { ...TOTE_PRODUCTS[0], slug: 'quarterbacks-thighs-football-tote', name: 'Here for the Plot. And the Quarterback’s Thighs.', priceEnv: 'STRIPE_FOOTBALL_TOTE_PRICE_ID', productEnv: 'STRIPE_FOOTBALL_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_FOOTBALL_ART_URL', imagePrefix: 'football-tote', sport: 'football' },
+  { ...SHIRT_PRODUCT, slug: 'quarterbacks-thighs-football-t-shirt', name: 'Here for the Plot. And the Quarterback’s Thighs.', priceEnv: 'STRIPE_FOOTBALL_SHIRT_PRICE_ID', productEnv: 'STRIPE_FOOTBALL_SHIRT_PRODUCT_ID', artEnv: 'INKTHREADABLE_FOOTBALL_ART_URL', imagePrefix: 'football-shirt', sport: 'football' },
+] as const;
+export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT, ...SPORTS_PRODUCTS] as const;
 export function validShirtSize(size: unknown): size is typeof SHIRT_SIZES[number] {
   return typeof size === 'string' && (SHIRT_SIZES as readonly string[]).includes(size);
 }
@@ -56,4 +62,15 @@ export function checkoutReady(slug = TOTE_SLUG) {
     (product.kind === 'shirt' || process.env.INKTHREADABLE_TOTE_PN) && process.env[product.artEnv] &&
     process.env.INKTHREADABLE_BRAND && (process.env.BLOB_STORE_ID || process.env.BLOB_READ_WRITE_TOKEN)
   );
+}
+
+export function hasColourOptions(slug: string) { return SPORTS_PRODUCTS.some(product => product.slug === slug); }
+export function getProductColour(slug: string, value: unknown): 'black' | 'white' | undefined {
+  if (!getToteProduct(slug)) return undefined;
+  if (!hasColourOptions(slug)) return value === undefined || value === 'black' ? 'black' : undefined;
+  return value === 'black' || value === 'white' ? value : undefined;
+}
+export function productImagePrefix(slug: string, colour: 'black' | 'white' = 'black') {
+  const product = getToteProduct(slug);
+  return product ? product.imagePrefix + (hasColourOptions(slug) ? '-' + colour : '') : '';
 }

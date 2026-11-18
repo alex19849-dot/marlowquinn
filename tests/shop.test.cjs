@@ -188,7 +188,7 @@ test('checkout requires a valid shirt size and binds size to metadata and idempo
   const { POST } = load('src/app/api/shop/checkout/route.ts', {
     '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({ checkout: { sessions: { create: async (params, options) => { sessions.push({params, options}); return { livemode: true, url: 'https://checkout.stripe.com/fixture' }; } } } }) },
   });
-  const request = body => new Request(shop.SHOP_URL + '/api/shop/checkout', { method: 'POST', headers: { origin: shop.SHOP_URL }, body: JSON.stringify(body) });
+  const request = body => new Request(shop.SHOP_URL + '/api/shop/checkout', { method: 'POST', headers: { origin: shop.SHOP_URL }, body: JSON.stringify({email:'buyer@example.com',...body}) });
   const body = { productSlug: shop.SHIRT_SLUG, country: 'GB', quantity: 1, requestId: '11111111-1111-1111-1111-111111111111' };
   for (const size of [undefined, '', '4XL', ['M']]) assert.equal((await POST(request({...body, size}))).status, 400);
   for (const size of ['XS','3XL']) {
@@ -265,7 +265,7 @@ test('checkout validates sports colours and keeps colour changes in separate ses
   const { POST } = load('src/app/api/shop/checkout/route.ts', {
     '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({checkout:{sessions:{create:async(params,options)=>{sessions.push({params,options});return{livemode:true,url:'https://checkout.stripe.com/fixture'};}}}}) },
   });
-  const request=body=>new Request(shop.SHOP_URL+'/api/shop/checkout',{method:'POST',headers:{origin:shop.SHOP_URL},body:JSON.stringify(body)});
+  const request=body=>new Request(shop.SHOP_URL+'/api/shop/checkout',{method:'POST',headers:{origin:shop.SHOP_URL},body:JSON.stringify({email:'buyer@example.com',...body})});
   for(const product of shop.SPORTS_PRODUCTS){
     process.env[product.priceEnv]='price_'+product.slug;process.env[product.productEnv]='prod_fixture';process.env[product.artEnv]='https://example.com/print.png';
     const body={productSlug:product.slug,size:'3XL',country:'GB',quantity:1,requestId:'11111111-1111-1111-1111-111111111111'};
@@ -343,7 +343,7 @@ test('mug checkout charges the fixed mug price and carries white selection throu
   const { POST } = load('src/app/api/shop/checkout/route.ts', {
     '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({checkout:{sessions:{create:async(params)=>{sessions.push(params);return{livemode:true,url:'https://checkout.stripe.com/fixture'};}}}}) },
   });
-  const request = body => new Request(shop.SHOP_URL+'/api/shop/checkout', { method:'POST', headers:{origin:shop.SHOP_URL}, body:JSON.stringify(body) });
+  const request = body => new Request(shop.SHOP_URL+'/api/shop/checkout', { method:'POST', headers:{origin:shop.SHOP_URL}, body:JSON.stringify({email:'buyer@example.com',...body}) });
   const body = {productSlug:product.slug,country:'GB',quantity:1,colour:'white',requestId:'11111111-1111-1111-1111-111111111111',price:1,pn:'wrong'};
   assert.equal((await POST(request({...body,colour:'black'}))).status,400);
   assert.equal((await POST(request(body))).status,200);
@@ -411,7 +411,7 @@ test('hoodie checkout and fulfilment preserve all six sizes, the £24 price and 
     '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({ checkout: { sessions: { create: async params => { sessions.push(params); return { livemode: true, url: 'https://checkout.stripe.com/fixture' }; } } } }) },
   });
   const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
-  const request = size => new Request(shop.SHOP_URL+'/api/shop/checkout', { method:'POST', headers:{origin:shop.SHOP_URL}, body:JSON.stringify({productSlug:product.slug,country:'GB',quantity:1,colour:'black',size,requestId:'11111111-1111-1111-1111-111111111111'}) });
+  const request = size => new Request(shop.SHOP_URL+'/api/shop/checkout', { method:'POST', headers:{origin:shop.SHOP_URL}, body:JSON.stringify({email:'buyer@example.com',productSlug:product.slug,country:'GB',quantity:1,colour:'black',size,requestId:'11111111-1111-1111-1111-111111111111'}) });
   for (const size of shop.HOODIE_SIZES) {
     assert.equal((await POST(request(size))).status, 200);
     const params = sessions.at(-1);
@@ -425,4 +425,36 @@ test('hoodie checkout and fulfilment preserve all six sizes, the £24 price and 
   }
   for (const size of [undefined, '', '3XL', '4XL', '5XL', '6XL', ['M'], 'M-other']) assert.equal((await POST(request(size))).status, 400);
   assert.equal(shop.deliveryQuote('US', 1, product.slug), null);
+});
+
+test('checkout requires a customer email and explicitly requests a Stripe receipt', async () => {
+  for (const key of ['STRIPE_RESTRICTED_KEY','STRIPE_WEBHOOK_SECRET','INKTHREADABLE_APP_ID','INKTHREADABLE_SECRET','INKTHREADABLE_BRAND','BLOB_READ_WRITE_TOKEN']) process.env[key] = 'fixture';
+  process.env.SHOP_CHECKOUT_ENABLED = process.env.SHOP_FULFILLMENT_ENABLED = 'true';
+  const product = shop.HOODIE_PRODUCT;
+  process.env[product.priceEnv]='price_hoodie';process.env[product.productEnv]='prod_hoodie';process.env[product.artEnv]='https://example.com/moth.png';
+  const calls=[];
+  const {POST}=load('src/app/api/shop/checkout/route.ts',{'@/lib/shop':shop,'@/lib/stripe':{stripeClient:()=>({checkout:{sessions:{create:async params=>{calls.push(params);return{livemode:true,url:'https://checkout.stripe.com/fixture'};}}}})}});
+  const body={productSlug:product.slug,size:'M',country:'GB',quantity:1,requestId:'11111111-1111-1111-1111-111111111111'};
+  const request=email=>new Request(shop.SHOP_URL+'/api/shop/checkout',{method:'POST',headers:{origin:shop.SHOP_URL},body:JSON.stringify({...body,email})});
+  for(const email of [undefined,'','bad','x@y','x\ny@example.com',['buyer@example.com']])assert.equal((await POST(request(email))).status,400);
+  assert.equal(calls.length,0);
+  assert.equal((await POST(request('  buyer@example.com  '))).status,200);
+  assert.equal(calls[0].customer_email,'buyer@example.com');
+  assert.equal(calls[0].payment_intent_data.receipt_email,'buyer@example.com');
+  assert.match(calls[0].payment_intent_data.description,/Good Books.*hoodie.*size M/);
+});
+
+test('receipt requests use only verified paid order email, and do not resend an existing receipt',async()=>{
+  const {emailPaymentReceipt}=load('src/lib/payment-receipt.ts',{'./shop':shop});
+  let session=fixture({customer_details:{email:'buyer@example.com'},payment_intent:{status:'succeeded',latest_charge:{id:'ch_example',paid:true,livemode:true,amount:1999,currency:'gbp',receipt_email:null,receipt_url:'https://pay.stripe.com/receipt'}}});
+  const calls=[];
+  const stripe={checkout:{sessions:{retrieve:async()=>session}},charges:{update:async(id,params,options)=>{calls.push({id,params,options});session.payment_intent.latest_charge.receipt_email=params.receipt_email;}}};
+  await emailPaymentReceipt(stripe,session.id);await emailPaymentReceipt(stripe,session.id);
+  assert.equal(calls.length,1);assert.equal(calls[0].params.receipt_email,'buyer@example.com');
+  assert.equal(calls[0].options.idempotencyKey,'shop-receipt-cs_live_example');
+  session.payment_status='unpaid';await assert.rejects(emailPaymentReceipt(stripe,session.id));
+  session.payment_status='paid';session.payment_intent.latest_charge.amount=1;await assert.rejects(emailPaymentReceipt(stripe,session.id));
+  session.payment_intent.latest_charge.amount=1999;session.payment_intent.latest_charge.receipt_email='other@example.com';await assert.rejects(emailPaymentReceipt(stripe,session.id));
+  session.livemode=false;await assert.rejects(emailPaymentReceipt(stripe,session.id));
+  await assert.rejects(emailPaymentReceipt(stripe,'cs_test_example'));assert.equal(calls.length,1);
 });

@@ -1,5 +1,5 @@
 import type Stripe from 'stripe';
-import { checkoutReady, deliveryQuote, getToteProduct, SHOP_URL, TOTE_SLUG, validShirtSize, getProductColour } from '@/lib/shop';
+import { checkoutReady, deliveryQuote, getToteProduct, SHOP_URL, TOTE_SLUG, validProductSize, getProductColour } from '@/lib/shop';
 import { stripeClient } from '@/lib/stripe';
 
 export const runtime = 'nodejs';
@@ -16,8 +16,8 @@ export async function POST(request: Request) {
     if (!product) return Response.json({ message: 'Please choose a product from the shop.' }, { status: 400 });
     const colour = getProductColour(product.slug, body?.colour);
     if (!colour) return Response.json({ message: 'Please choose an available colour.' }, { status: 400 });
-    const size = product.kind === 'shirt' ? body?.size : undefined;
-    if (product.kind === 'shirt' && !validShirtSize(size)) return Response.json({ message: 'Please choose a T-shirt size.' }, { status: 400 });
+    const size = (product.kind === 'shirt' || product.kind === 'hoodie') ? body?.size : undefined;
+    if ((product.kind === 'shirt' || product.kind === 'hoodie') && !validProductSize(product.slug, size)) return Response.json({ message: 'Please choose an available size.' }, { status: 400 });
     if (!checkoutReady(product.slug)) return Response.json({ message: 'This product is not available to order yet.' }, { status: 503 });
     const country = typeof body?.country === 'string' ? body.country : '';
     const requestId = typeof body?.requestId === 'string' ? body.requestId : '';

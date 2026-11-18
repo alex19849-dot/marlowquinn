@@ -102,10 +102,10 @@ test('the selected tote uses its own price and artwork, and a swapped price cann
   await assert.rejects(fulfill(stripe, session.id)); assert.equal(submitted.length, 0);
   session.line_items.data[0].price.id = 'price_fictional';
   await fulfill(stripe, session.id);
-  assert.equal(submitted[0].items[0].designs[0].src, 'https://example.com/fictional.png');
-  assert.ok(submitted[0].items[0].mockups[0].src.endsWith('fictional-men-detail.webp'));
+  assert.equal(submitted[0].items[0].designs.front, 'https://example.com/fictional.png');
+  assert.ok(submitted[0].items[0].mockups.front.endsWith('fictional-men-detail.webp'));
   const original = fixture(); original.metadata.website_slug = shop.TOTE_SLUG;
-  assert.equal(supplier.buildSupplierOrder(original, 1).items[0].designs[0].src, 'https://example.com/original.png');
+  assert.equal(supplier.buildSupplierOrder(original, 1).items[0].designs.front, 'https://example.com/original.png');
   assert.equal(shop.getToteProduct('unrecognised-tote'), undefined);
 });
 
@@ -160,7 +160,7 @@ test('shirt fulfilment preserves every size and uses the shirt price and print l
     await fulfill(stripe, session.id);
     const item = submitted.at(-1).items[0];
     assert.equal(item.pn, `STTW079-BLK-${size}`); assert.equal(item.retailPrice, 24.99);
-    assert.equal(item.designs[0].src, 'https://example.com/good-manners.png');
+    assert.equal(item.designs.front, 'https://example.com/good-manners.png');
     assert.match(item.description, /260 mm wide by 300 mm/);
   }
   for (const bad of [undefined, '', '4XL', 'M;other-sku', ['M']]) {
@@ -220,8 +220,8 @@ test('Fictional Men shirt keeps its own payment and print while preserving size'
   session.line_items.data[0].price.id = 'price_fictional_shirt';
   await fulfill(stripe, session.id);
   assert.equal(submitted[0].items[0].pn, 'STTW079-BLK-3XL');
-  assert.equal(submitted[0].items[0].designs[0].src, 'https://example.com/fictional-shirt.png');
-  assert.ok(submitted[0].items[0].mockups[0].src.endsWith('fictional-men-shirt-detail.webp'));
+  assert.equal(submitted[0].items[0].designs.front, 'https://example.com/fictional-shirt.png');
+  assert.ok(submitted[0].items[0].mockups.front.endsWith('fictional-men-shirt-detail.webp'));
   assert.equal(submitted[0].items[0].retailPrice, 24.99);
 });
 
@@ -242,8 +242,8 @@ test('sports orders preserve design, colour, garment, size and the matching mock
       await fulfill(stripe, session.id);
       const item = submitted.at(-1).items[0], code = colour === 'white' ? 'WHI' : 'BLK';
       assert.equal(item.pn, product.kind === 'shirt' ? `STTW079-${code}-${size}` : `STAU773-${code}`);
-      assert.equal(item.designs[0].src, 'https://example.com/'+product.sport+'.png');
-      assert.ok(item.mockups[0].src.endsWith(product.imagePrefix+'-'+colour+'-detail.webp'));
+      assert.equal(item.designs.front, 'https://example.com/'+product.sport+'.png');
+      assert.ok(item.mockups.front.endsWith(product.imagePrefix+'-'+colour+'-detail.webp'));
     }
     const count = submitted.length;
     for (const bad of [undefined, 'natural', 'White', '', ['white'], 'white-SKU']) {
@@ -320,9 +320,9 @@ test('paid mug orders use white ceramic, the two-sided wrap and appropriate carr
     await fulfill(stripe, session.id);
     const order = submitted.at(-1), item = order.items[0];
     assert.equal(item.pn, 'MUG-CER-WHI'); assert.equal(item.quantity, q); assert.equal(item.retailPrice, 12.99);
-    assert.equal(item.designs[0].src, 'https://example.com/mug-wrap.png'); assert.equal(item.designs[0].title, 'Printing Mug');
+    assert.equal(item.designs.front, 'https://example.com/mug-wrap.png');
     assert.match(item.description, /200 x 90 mm/); assert.match(item.description, /both sides/);
-    assert.ok(item.mockups[0].src.endsWith('sweet-romance-mug-model.webp'));
+    assert.ok(item.mockups.front.endsWith('sweet-romance-mug-model.webp'));
     assert.equal(order.shipping.shippingMethod, country !== 'GB' && q >= 5 ? 'courier' : 'recorded');
   }
   const count = submitted.length;
@@ -369,8 +369,8 @@ test('rainbow mug keeps its own print file, mockup and price when fulfilled', as
   await fulfill(stripe, session.id);
   const item = submitted[0].items[0];
   assert.equal(item.pn, 'MUG-CER-WHI');
-  assert.equal(item.designs[0].src, 'https://example.com/rainbow-plot-mug-wrap.png');
-  assert.ok(item.mockups[0].src.endsWith('rainbow-plot-mug-model.webp'));
+  assert.equal(item.designs.front, 'https://example.com/rainbow-plot-mug-wrap.png');
+  assert.ok(item.mockups.front.endsWith('rainbow-plot-mug-model.webp'));
   assert.doesNotMatch(item.description, /51778643/);
   session.line_items.data[0].price.id = process.env[shop.MUG_PRODUCT.priceEnv];
   await assert.rejects(fulfill(stripe, session.id));
@@ -394,10 +394,35 @@ test('vampire tote keeps its selected print and price, and rejects a different t
   await fulfill(stripe, session.id);
   const item = submitted[0].items[0];
   assert.equal(item.pn, process.env.INKTHREADABLE_TOTE_PN);
-  assert.equal(item.designs[0].src, 'https://example.com/vampire-boyfriend-tote-print.png');
-  assert.equal(item.designs[0].title, 'Printing Front - DTG');
-  assert.ok(item.mockups[0].src.endsWith('vampire-boyfriend-tote-detail.webp'));
+  assert.equal(item.designs.front, 'https://example.com/vampire-boyfriend-tote-print.png');
+  assert.ok(item.mockups.front.endsWith('vampire-boyfriend-tote-detail.webp'));
   session.line_items.data[0].price.id = process.env[shop.TOTE_PRODUCTS[0].priceEnv];
   await assert.rejects(fulfill(stripe, session.id));
   assert.equal(submitted.length, 1);
+});
+
+test('hoodie checkout and fulfilment preserve all six sizes, the £24 price and the literary moth artwork', async () => {
+  const product = shop.HOODIE_PRODUCT;
+  for (const key of ['STRIPE_RESTRICTED_KEY','STRIPE_WEBHOOK_SECRET','INKTHREADABLE_APP_ID','INKTHREADABLE_SECRET','INKTHREADABLE_BRAND','BLOB_READ_WRITE_TOKEN']) process.env[key] = 'fixture';
+  process.env.SHOP_CHECKOUT_ENABLED = process.env.SHOP_FULFILLMENT_ENABLED = 'true';
+  process.env[product.priceEnv] = 'price_hoodie'; process.env[product.productEnv] = 'prod_hoodie'; process.env[product.artEnv] = 'https://example.com/moth.png';
+  const sessions = [];
+  const { POST } = load('src/app/api/shop/checkout/route.ts', {
+    '@/lib/shop': shop, '@/lib/stripe': { stripeClient: () => ({ checkout: { sessions: { create: async params => { sessions.push(params); return { livemode: true, url: 'https://checkout.stripe.com/fixture' }; } } } }) },
+  });
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  const request = size => new Request(shop.SHOP_URL+'/api/shop/checkout', { method:'POST', headers:{origin:shop.SHOP_URL}, body:JSON.stringify({productSlug:product.slug,country:'GB',quantity:1,colour:'black',size,requestId:'11111111-1111-1111-1111-111111111111'}) });
+  for (const size of shop.HOODIE_SIZES) {
+    assert.equal((await POST(request(size))).status, 200);
+    const params = sessions.at(-1);
+    assert.equal(params.line_items[0].price, 'price_hoodie'); assert.equal(params.metadata.website_size, size);
+    const session = fixture({ metadata: params.metadata });
+    const item = supplier.buildSupplierOrder(session, 1).items[0];
+    assert.equal(item.pn, `JH001-JBK-${size}`); assert.equal(item.retailPrice, 24);
+    assert.equal(item.designs.front, 'https://example.com/moth.png');
+    assert.ok(item.mockups.front.endsWith('literary-moth-hoodie-detail.webp'));
+    assert.match(item.description, /above kangaroo pocket, 260 mm/);
+  }
+  for (const size of [undefined, '', '3XL', '4XL', '5XL', '6XL', ['M'], 'M-other']) assert.equal((await POST(request(size))).status, 400);
+  assert.equal(shop.deliveryQuote('US', 1, product.slug), null);
 });

@@ -14,6 +14,7 @@ const categories = [
   { key: 'mug', label: 'Mugs' },
   { key: 'tote', label: 'Tote bags' },
   { key: 'shirt', label: 'T-shirts' },
+  { key: 'hoodie', label: 'Hoodies' },
 ] as const;
 const titles: Record<string, string> = {
   'quarterbacks-thighs-football-tote': 'The Quarterback’s Thighs',
@@ -26,7 +27,7 @@ export default async function ShopPage({ searchParams }: Props) {
   const query = await searchParams;
   const category = categories.find(item => item.key === query.category) || categories[0];
   // Alternate product types on the main shelf so visitors see the range at a glance.
-  const groups = ['tote', 'shirt', 'mug'].map(kind => SHOP_PRODUCTS.filter(product => product.kind === kind));
+  const groups = ['hoodie', 'tote', 'shirt', 'mug'].map(kind => SHOP_PRODUCTS.filter(product => product.kind === kind));
   const featured = Array.from({ length: Math.max(...groups.map(group => group.length)) }, (_, index) => groups.flatMap(group => group[index] ? [group[index]] : [])).flat();
   const collection = category.key === 'all' ? featured : SHOP_PRODUCTS.filter(product => product.kind === category.key);
   const pageCount = Math.max(1, Math.ceil(collection.length / pageSize));
@@ -55,18 +56,19 @@ export default async function ShopPage({ searchParams }: Props) {
         const open = checkoutReady(product.slug);
         const mug = product.kind === 'mug';
         const shirt = product.kind === 'shirt';
-        const type = shirt ? 'T-shirt' : mug ? 'Mug' : 'Tote bag';
+        const hoodie = product.kind === 'hoodie';
+        const type = hoodie ? 'Hoodie' : shirt ? 'T-shirt' : mug ? 'Mug' : 'Tote bag';
         const title = titles[product.slug] || product.name;
         const colours = hasColourOptions(product.slug) ? 'Black or white' : mug ? 'White' : 'Black';
         return <article className="shop-product-card" key={product.slug}>
           <Link className={'shop-feature-photo'+(mug ? ' shop-mug-photo' : '')} href={'/shop/'+product.slug} aria-label={'View '+title+' '+type.toLowerCase()}>
-            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'White ceramic mug with the '+product.name+' bookish design' : (shirt ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+' organic cotton '+type.toLowerCase()} width={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 360) : 1157} height={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 422) : 1359} priority={index < 3} sizes="(max-width:600px) calc((100vw - 48px) / 2), (max-width:900px) 45vw, 380px"/>
+            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'White ceramic mug with the '+product.name+' bookish design' : ((shirt || hoodie) ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+(hoodie ? ' cotton-blend ' : ' organic cotton ')+type.toLowerCase()} width={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 360) : 1157} height={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 422) : 1359} priority={index < 3} sizes="(max-width:600px) calc((100vw - 48px) / 2), (max-width:900px) 45vw, 380px"/>
             {!open && <span className="shop-photo-badge">Coming soon</span>}
           </Link>
           <div className="shop-product-card-body">
-            <p className="shop-card-kind">{type}{mug ? ' · 11oz' : shirt ? ' · XS–3XL' : ''}</p>
+            <p className="shop-card-kind">{type}{mug ? ' · 11oz' : hoodie ? ' · XS to 2XL' : shirt ? ' · XS–3XL' : ''}</p>
             <h3><Link href={'/shop/'+product.slug}>{title}</Link></h3>
-            <p className="shop-card-options">{mug ? 'Glossy ceramic' : 'Organic cotton'} · {colours}</p>
+            <p className="shop-card-options">{mug ? 'Glossy ceramic' : hoodie ? 'Cotton blend' : 'Organic cotton'} · {colours}</p>
             <div className="shop-card-footer"><p className="shop-card-price">£{(product.pricePence / 100).toFixed(2)}<span>UK delivery included</span></p><Link href={'/shop/'+product.slug} className="button-secondary" aria-label={'View '+title+' '+type.toLowerCase()}>View item <span aria-hidden="true">→</span></Link></div>
           </div>
         </article>;

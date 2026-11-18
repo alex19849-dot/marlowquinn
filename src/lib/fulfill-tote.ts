@@ -1,5 +1,5 @@
 import type Stripe from 'stripe';
-import { deliveryQuote, getToteProduct, validProductSize, getProductColour } from './shop';
+import { deliveryQuote, getToteProduct, validProductSize, getProductColour, paidUnitPrice } from './shop';
 import { buildSupplierOrder, submitSupplierOrder } from './inkthreadable';
 import { claimOrder, saveOrder } from './shop-orders';
 
@@ -13,10 +13,11 @@ export async function fulfillTote(stripe: Stripe, sessionId: string) {
   const items = session.line_items?.data;
   const item = items?.[0];
   const quantity = item?.quantity || 0;
+  const unitPrice = paidUnitPrice(product.slug, item?.price?.id);
   const quote = deliveryQuote(country, quantity, product.slug);
   if (!getProductColour(product.slug, session.metadata?.website_colour) || ((product.kind === 'shirt' || product.kind === 'hoodie') && !validProductSize(product.slug, session.metadata?.website_size)) || session.currency !== 'gbp' || !quote || items?.length !== 1 ||
-    !process.env[product.priceEnv] || item?.price?.id !== process.env[product.priceEnv] || item?.amount_total !== product.pricePence * quantity ||
-    session.amount_total !== product.pricePence * quantity + quote.amount || session.total_details?.amount_shipping !== quote.amount) {
+    unitPrice === null || item?.amount_total !== unitPrice * quantity ||
+    session.amount_total !== unitPrice * quantity + quote.amount || session.total_details?.amount_shipping !== quote.amount) {
     throw new Error('Paid order details require review.');
   }
   const order = buildSupplierOrder(session, quantity);

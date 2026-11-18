@@ -11,7 +11,9 @@ export async function POST(request: Request) {
     if (typeof body.sessionId !== 'string') return Response.json({message:'Invalid order reference.'},{status:400});
     await emailPaymentReceipt(stripeClient(), body.sessionId);
     return Response.json({message:'Your receipt has been requested for the email address used at checkout.'},{headers:{'Cache-Control':'no-store'}});
-  } catch {
+  } catch (error) {
+    const failure = error as { type?: string; statusCode?: number };
+    console.error('Shop receipt request failed', { type: failure?.type || (error instanceof Error ? error.name : 'unknown'), status: failure?.statusCode || null });
     return Response.json({message:'We could not email your receipt. Please contact us with your order reference.'},{status:502});
   }
 }

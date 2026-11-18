@@ -7,7 +7,7 @@ import { checkoutReady, HOODIE_SLUG, HOODIE_SIZES } from '@/lib/shop';
 export const dynamic = 'force-dynamic';
 export const metadata: Metadata = {
   title: 'Good Books. Bad Intentions. Black Hoodie',
-  description: 'A black AWDis College Hoodie with a richly coloured literary moth and ivory lettering. XS to 2XL. £24 with UK delivery included.',
+  description: 'A black AWDis College Hoodie with a richly coloured literary moth and ivory lettering. XS to 2XL. £39.99 with UK delivery included.',
   alternates: { canonical: '/shop/good-books-bad-intentions-hoodie' },
   openGraph: { images: [{ url: '/shop/literary-moth-hoodie-detail.webp', width: 1254, height: 1254, alt: 'Literary moth print on a black hoodie' }] },
 };
@@ -41,7 +41,7 @@ export default function MothHoodiePage() {
           <div className="shirt-measurements-scroll" role="region" aria-label="To fit chest sizes in inches, scroll horizontally on small screens" tabIndex={0}><table className="shirt-measurements"><caption>To fit chest, in inches</caption><thead><tr><th scope="col">Size</th>{HOODIE_SIZES.map(size => <th scope="col" key={size}>{size}</th>)}</tr></thead><tbody><tr><th scope="row">Chest</th>{chest.map(value => <td key={value}>{value}</td>)}</tr></tbody></table></div>
           <p className="fine-print">Half chest is measured flat, not around the body. Garment measurements are approximate and provided as a guide.</p>
         </section>
-        <details className="content-notes"><summary>Care & delivery</summary><p className="muted">Wash at 30°C. Do not tumble dry. Do not iron. Colours may look slightly different on your screen.</p><p className="muted">£24 with UK tracked delivery included. Made to order in 3 to 5 working days, plus delivery. Currently available for UK delivery. For other destinations, please contact us.</p></details>
+        <details className="content-notes"><summary>Care & delivery</summary><p className="muted">Wash at 30°C. Do not tumble dry. Do not iron. Colours may look slightly different on your screen.</p><p className="muted">£39.99 with UK tracked delivery included. Made to order in 3 to 5 working days, plus delivery. Currently available for UK delivery. For other destinations, please contact us.</p></details>
       </section>
     </div>
   </main>;

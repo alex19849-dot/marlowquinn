@@ -4,7 +4,7 @@ export const SHIRT_SLUG = 'good-manners-filthy-bookshelf-t-shirt';
 export const FICTIONAL_SHIRT_SLUG = 'easily-distracted-by-fictional-men-t-shirt';
 export const SHIRT_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'] as const;
 export const HOODIE_SLUG = 'good-books-bad-intentions-hoodie';
-export const HOODIE_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL', '4XL', '5XL'] as const;
+export const HOODIE_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL'] as const;
 export const HOODIE_PRODUCT = { slug: HOODIE_SLUG, name: 'Good Books. Bad Intentions.', priceEnv: 'STRIPE_MOTH_HOODIE_PRICE_ID', productEnv: 'STRIPE_MOTH_HOODIE_PRODUCT_ID', artEnv: 'INKTHREADABLE_MOTH_HOODIE_ART_URL', imagePrefix: 'literary-moth-hoodie', kind: 'hoodie', pricePence: 2400, usDutyPermille: 265 } as const;
 export const TOTE_PRODUCTS = [
   { slug: TOTE_SLUG, name: 'Good Manners. Filthy Bookshelf.', priceEnv: 'STRIPE_TOTE_PRICE_ID', productEnv: 'STRIPE_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_TOTE_ART_URL', imagePrefix: 'filthy-bookshelf', kind: 'tote', pricePence: 1999, usDutyPermille: 163 },

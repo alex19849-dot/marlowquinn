@@ -1,5 +1,6 @@
 import type { Metadata } from 'next';
 import Link from 'next/link';
+import EmailReceipt from '@/components/EmailReceipt';
 import { stripeClient } from '@/lib/stripe';
 import { getToteProduct } from '@/lib/shop';
 
@@ -19,5 +20,5 @@ export default async function ThankYou({ searchParams }: { searchParams: Promise
       }
     } catch { /* Never claim payment was received without confirmation from Stripe. */ }
   }
-  return <main id="main-content" className="page-width page-section"><div className="form-shell"><p className="eyebrow">The Marlow Quinn shop</p><h1>{paid ? 'Thank you. Your payment is received.' : pending ? 'Your payment is processing.' : 'Let’s check your order.'}</h1><p>{paid ? 'Your item will be made especially for you. Please allow 3 to 5 working days for production, plus delivery.' : pending ? 'Your payment provider is still confirming the payment. Your item will enter fulfilment once payment is confirmed.' : 'We could not confirm a completed payment here. Please check your Stripe receipt before trying another payment, or contact us if you need help.'}</p><div className="button-row"><Link href="/shop" className="button-primary">Back to the shop</Link><Link href="/contact" className="button-secondary">Ask about an order</Link></div></div></main>;
+  return <main id="main-content" className="page-width page-section"><div className="form-shell"><p className="eyebrow">The Marlow Quinn shop</p><h1>{paid ? 'Thank you. Your payment is received.' : pending ? 'Your payment is processing.' : 'Let’s check your order.'}</h1><p>{paid ? 'Your item will be made especially for you. Please allow 3 to 5 working days for production, plus delivery.' : pending ? 'Your payment provider is still confirming the payment. Your item will enter fulfilment once payment is confirmed.' : 'We could not confirm a completed payment here. Please check your Stripe receipt before trying another payment, or contact us if you need help.'}</p>{paid && session_id && <><p>Your payment receipt will be sent by Stripe to the email address entered at checkout. Check your spam folder if it has not arrived.</p><EmailReceipt sessionId={session_id}/></>}<div className="button-row"><Link href="/shop" className="button-primary">Back to the shop</Link><Link href="/contact" className="button-secondary">Ask about an order</Link></div></div></main>;
 }

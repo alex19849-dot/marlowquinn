@@ -1,6 +1,6 @@
 import { createHash } from 'node:crypto';
 import type Stripe from 'stripe';
-import { getToteProduct, validProductSize, getProductColour, productImagePrefix, hasColourOptions } from './shop';
+import { getToteProduct, validProductSize, getProductColour, productImagePrefix, hasColourOptions, paidUnitPrice } from './shop';
 
 export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: number) {
   const product = getToteProduct(session.metadata?.website_slug || '');
@@ -32,7 +32,7 @@ export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: n
     },
     shipping: { shippingMethod: courier ? 'courier' : 'recorded' },
     items: [{
-      pn: hoodie ? `JH001-JBK-${size}` : mug ? 'MUG-CER-WHI' : product.kind === 'shirt' ? `STTW079-${colourCode}-${size}` : hasColourOptions(product.slug) ? `STAU773-${colourCode}` : process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: product.pricePence / 100, retailCurrency: 'GBP',
+      pn: hoodie ? `JH001-JBK-${size}` : mug ? 'MUG-CER-WHI' : product.kind === 'shirt' ? `STTW079-${colourCode}-${size}` : hasColourOptions(product.slug) ? `STAU773-${colourCode}` : process.env.INKTHREADABLE_TOTE_PN, quantity, retailPrice: (paidUnitPrice(product.slug, session.line_items?.data?.[0]?.price?.id) ?? product.pricePence) / 100, retailCurrency: 'GBP',
       description: hoodie ? `Black AWDis College Hoodie, size ${size}. Front DTG print, centred on chest above kangaroo pocket, 260 mm wide. Preserve supplied artwork and aspect ratio; do not crop. Plain back.` : mug ? '11oz glossy white ceramic mug. Dye sublimation. Print the supplied 200 x 90 mm wrap at its exact size, with the same design on both sides. Do not stretch, crop or enlarge to fill the mug.' : product.kind === 'shirt' ? `${colour === 'white' ? 'White' : 'Black'} Stella Expresser 2.0, size ${size}. Front DTG print, centred, maximum 260 mm wide by 300 mm high. Preserve the artwork aspect ratio.` : 'Front DTG print, centred, 220 mm wide. Preserve the artwork aspect ratio.',
       designs: { front: process.env[product.artEnv] },
       mockups: { front: `https://www.marlowquinn.com/shop/${productImagePrefix(product.slug, colour)}-${mug ? 'model' : 'detail'}.webp` },

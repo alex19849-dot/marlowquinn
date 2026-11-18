@@ -401,7 +401,7 @@ test('vampire tote keeps its selected print and price, and rejects a different t
   assert.equal(submitted.length, 1);
 });
 
-test('hoodie checkout and fulfilment preserve all six sizes, the £24 price and the literary moth artwork', async () => {
+test('hoodie checkout and fulfilment preserve all six sizes, the £39.99 price and the literary moth artwork', async () => {
   const product = shop.HOODIE_PRODUCT;
   for (const key of ['STRIPE_RESTRICTED_KEY','STRIPE_WEBHOOK_SECRET','INKTHREADABLE_APP_ID','INKTHREADABLE_SECRET','INKTHREADABLE_BRAND','BLOB_READ_WRITE_TOKEN']) process.env[key] = 'fixture';
   process.env.SHOP_CHECKOUT_ENABLED = process.env.SHOP_FULFILLMENT_ENABLED = 'true';
@@ -418,7 +418,7 @@ test('hoodie checkout and fulfilment preserve all six sizes, the £24 price and 
     assert.equal(params.line_items[0].price, 'price_hoodie'); assert.equal(params.metadata.website_size, size);
     const session = fixture({ metadata: params.metadata });
     const item = supplier.buildSupplierOrder(session, 1).items[0];
-    assert.equal(item.pn, `JH001-JBK-${size}`); assert.equal(item.retailPrice, 24);
+    assert.equal(item.pn, `JH001-JBK-${size}`); assert.equal(item.retailPrice, 39.99);
     assert.equal(item.designs.front, 'https://example.com/moth.png');
     assert.ok(item.mockups.front.endsWith('literary-moth-hoodie-detail.webp'));
     assert.match(item.description, /above kangaroo pocket, 260 mm/);
@@ -457,4 +457,21 @@ test('receipt requests use only verified paid order email, and do not resend an 
   session.payment_intent.latest_charge.amount=1999;session.payment_intent.latest_charge.receipt_email='other@example.com';await assert.rejects(emailPaymentReceipt(stripe,session.id));
   session.livemode=false;await assert.rejects(emailPaymentReceipt(stripe,session.id));
   await assert.rejects(emailPaymentReceipt(stripe,'cs_test_example'));assert.equal(calls.length,1);
+});
+
+
+test('retail hoodie pricing preserves the paid £24 sample and rejects price or amount swaps', async () => {
+  const product=shop.HOODIE_PRODUCT;process.env[product.priceEnv]='price_retail_hoodie';
+  process.env[product.artEnv]='https://example.com/moth.png';
+  const supplier=load('src/lib/inkthreadable.ts',{'./shop':shop});
+  let session;const orders=[];
+  const fulfill=load('src/lib/fulfill-tote.ts',{'./shop':shop,'./inkthreadable':{...supplier,submitSupplierOrder:async order=>{orders.push(order);return '995';}},'./shop-orders':{claimOrder:async()=>({acquired:true,record:{sessionId:session.id,state:'submitting'},etag:'one'}),saveOrder:async()=>{}}}).fulfillTote;
+  const stripe={checkout:{sessions:{retrieve:async()=>session}}};
+  for(const [price,amount] of [['price_1Ud6UpBeoJbpABNhpp7Cbrwf',2400],['price_retail_hoodie',3999]]){
+    session=fixture({metadata:{website_slug:product.slug,website_colour:'black',website_size:'M'},amount_total:amount,line_items:{data:[{quantity:1,amount_total:amount,price:{id:price}}]}});
+    await fulfill(stripe,session.id);assert.equal(orders.at(-1).items[0].retailPrice,amount/100);
+  }
+  session.line_items.data[0].price.id='price_wrong';await assert.rejects(fulfill(stripe,session.id));
+  session.line_items.data[0].price.id='price_retail_hoodie';session.amount_total=2400;session.line_items.data[0].amount_total=2400;await assert.rejects(fulfill(stripe,session.id));
+  assert.equal(orders.length,2);assert.equal(product.pricePence,3999);
 });

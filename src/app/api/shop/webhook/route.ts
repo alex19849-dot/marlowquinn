@@ -1,3 +1,4 @@
+import { basketFromMetadata } from '@/lib/basket';
 import { stripeClient } from '@/lib/stripe';
 import { fulfillTote } from '@/lib/fulfill-tote';
 import { getToteProduct } from '@/lib/shop';
@@ -19,7 +20,7 @@ export async function POST(request: Request) {
   if (!['checkout.session.completed','checkout.session.async_payment_succeeded','checkout.session.async_payment_failed'].includes(event.type)) return Response.json({ received: true });
   if (event.type === 'checkout.session.async_payment_failed') return Response.json({ received: true });
   const session = event.data.object as { id: string; metadata?: Record<string, string> | null };
-  if (!getToteProduct(session.metadata?.website_slug || '')) return Response.json({ received: true });
+  if (!getToteProduct(session.metadata?.website_slug || '') && session.metadata?.basket_version !== '1') return Response.json({ received: true });
   if (process.env.SHOP_FULFILLMENT_ENABLED !== 'true') return Response.json({ received: false }, { status: 503 });
   try {
     await fulfillTote(stripe, session.id);

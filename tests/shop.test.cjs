@@ -12,7 +12,7 @@ function load(file, mocks = {}) {
   }).outputText;
   const module = { exports: {} };
   vm.runInNewContext(source, { module, exports: module.exports, process, Request, Response, AbortSignal, URL, Intl, console,
-    require(name) { if (name in mocks) return mocks[name]; return require(name); },
+    require(name) { if (name in mocks) return mocks[name]; const local = name.startsWith('.') ? path.resolve(path.dirname(filename), name + '.ts') : name.startsWith('@/') ? path.resolve(__dirname, '../src', name.slice(2) + '.ts') : null; if (local && fs.existsSync(local)) return load(local, mocks); return require(name); },
   }, { filename });
   return module.exports;
 }
@@ -474,4 +474,66 @@ test('retail hoodie pricing preserves the paid £24 sample and rejects price or 
   session.line_items.data[0].price.id='price_wrong';await assert.rejects(fulfill(stripe,session.id));
   session.line_items.data[0].price.id='price_retail_hoodie';session.amount_total=2400;session.line_items.data[0].amount_total=2400;await assert.rejects(fulfill(stripe,session.id));
   assert.equal(orders.length,2);assert.equal(product.pricePence,3999);
+});
+
+const basket = load('src/lib/basket.ts');
+test('basket normalisation preserves variants, merges duplicate additions and rejects invalid or oversized baskets', () => {
+  const a = {slug:shop.SHIRT_SLUG,colour:'black',size:'M',quantity:1};
+  const b = {...a,size:'L'};
+  const rows = basket.normaliseBasket([a,a,b]);
+  assert.equal(rows.length,2);assert.equal(rows[0].quantity,2);assert.equal(rows[1].size,'L');
+  assert.equal(basket.normaliseBasket([{...a,size:'9XL'}]),null);
+  assert.equal(basket.normaliseBasket([{...a,quantity:7}]),null);
+  assert.equal(basket.normaliseBasket([{...a,quantity:1.5}]),null);
+  assert.equal(basket.normaliseBasket([{slug:shop.TOTE_SLUG,colour:'white',quantity:1}]),null);
+  assert.equal(basket.normaliseBasket([{slug:shop.MUG_PRODUCT.slug,colour:'black',quantity:1}]),null);
+  assert.equal(basket.normaliseBasket([{...a,quantity:4},{...b,quantity:3}]),null);
+  assert.equal(basket.basketFromMetadata({basket_version:'1',basket_count:'2',basket_0:'{}',basket_1:'bad'}),null);
+});
+test('mixed baskets charge server prices, group same-design sizes for postage and retain hoodie country restrictions',()=>{
+  const items=[{slug:shop.TOTE_SLUG,colour:'black',quantity:1},{slug:shop.MUG_PRODUCT.slug,colour:'white',quantity:1}];
+  assert.equal(basket.basketSubtotal(items),3298);assert.equal(basket.basketDelivery('GB',items).amount,0);
+  assert.equal(basket.basketDelivery('US',items).amount,shop.deliveryQuote('US',1,shop.TOTE_SLUG).amount+shop.deliveryQuote('US',1,shop.MUG_PRODUCT.slug).amount);
+  assert.equal(basket.basketDelivery('US',[{slug:shop.HOODIE_SLUG,colour:'black',size:'M',quantity:1}]),null);
+  assert.equal(basket.basketDelivery('GB',[]),null);
+  const sizes=['M','L'].map(size=>({slug:shop.SHIRT_SLUG,colour:'black',size,quantity:1}));
+  assert.equal(basket.basketDelivery('DE',sizes).amount,shop.deliveryQuote('DE',2,shop.SHIRT_SLUG).amount);
+});
+test('mixed paid order maps both tee sizes, mug and tote to correct prints in one idempotent supplier order',async()=>{
+  const items=[{slug:shop.SHIRT_SLUG,colour:'black',size:'M',quantity:1},{slug:shop.SHIRT_SLUG,colour:'black',size:'L',quantity:1},{slug:shop.PLOT_MUG_PRODUCT.slug,colour:'white',quantity:1},{slug:shop.VAMPIRE_TOTE_PRODUCT.slug,colour:'black',quantity:1}];
+  for(const p of shop.SHOP_PRODUCTS){process.env[p.priceEnv]='price_'+p.slug;process.env[p.artEnv]='https://example.com/'+p.slug+'.png';}
+  process.env.INKTHREADABLE_TOTE_PN='STAU773-BLK';
+  const lines=[shop.SHIRT_PRODUCT,shop.PLOT_MUG_PRODUCT,shop.VAMPIRE_TOTE_PRODUCT].map((p,i)=>({quantity:i===0?2:1,amount_total:p.pricePence*(i===0?2:1),price:{id:process.env[p.priceEnv]}}));
+  let session=fixture({metadata:basket.basketMetadata(items),line_items:{data:lines},amount_total:basket.basketSubtotal(items)});
+  let record;const submitted=[];const supplier=load('src/lib/inkthreadable.ts',{'./shop':shop});
+  const fulfill=load('src/lib/fulfill-tote.ts',{'./shop':shop,'./inkthreadable':{...supplier,submitSupplierOrder:async order=>{submitted.push(order);return '123';}},'./shop-orders':{claimOrder:async()=>record?{acquired:false,record}:{acquired:true,record:{sessionId:session.id,state:'submitting'},etag:'one'},saveOrder:async value=>{record=value;}}}).fulfillTote;
+  const stripe={checkout:{sessions:{retrieve:async()=>session}}};
+  const valid=structuredClone(session);
+  session.amount_total=1;await assert.rejects(fulfill(stripe,session.id));
+  session=structuredClone(valid);session.line_items.data[0].quantity=1;await assert.rejects(fulfill(stripe,session.id));
+  session=structuredClone(valid);session.metadata.basket_0=JSON.stringify({...items[0],size:'7XL'});await assert.rejects(fulfill(stripe,session.id));
+  session=structuredClone(valid);session.line_items.data[1].price.id='price_wrong';await assert.rejects(fulfill(stripe,session.id));
+  session=structuredClone(valid);session.collected_information.shipping_details.address.country='US';await assert.rejects(fulfill(stripe,session.id));
+  session=structuredClone(valid);session.line_items.has_more=true;await assert.rejects(fulfill(stripe,session.id));
+  session=structuredClone(valid);await fulfill(stripe,session.id);await fulfill(stripe,session.id);
+  assert.equal(submitted.length,1);assert.equal(submitted[0].items.length,4);
+  assert.equal(submitted[0].items[0].pn,'STTW079-BLK-M');assert.equal(submitted[0].items[1].pn,'STTW079-BLK-L');
+  assert.equal(submitted[0].items[2].pn,'MUG-CER-WHI');assert.equal(submitted[0].items[3].pn,'STAU773-BLK');
+  assert.equal(submitted[0].items[2].designs.front,process.env[shop.PLOT_MUG_PRODUCT.artEnv]);
+  assert.equal(submitted[0].items[3].designs.front,process.env[shop.VAMPIRE_TOTE_PRODUCT.artEnv]);
+});
+test('basket checkout ignores client totals and binds all variants, email and delivery to a single Stripe session',async()=>{
+  process.env.SHOP_CHECKOUT_ENABLED='true';process.env.SHOP_FULFILLMENT_ENABLED='true';process.env.STRIPE_RESTRICTED_KEY='fixture';process.env.STRIPE_WEBHOOK_SECRET='fixture';process.env.INKTHREADABLE_APP_ID='fixture';process.env.INKTHREADABLE_SECRET='fixture';process.env.INKTHREADABLE_BRAND='fixture';process.env.BLOB_STORE_ID='fixture';
+  const items=[{slug:shop.SHIRT_SLUG,colour:'black',size:'M',quantity:1},{slug:shop.SHIRT_SLUG,colour:'black',size:'L',quantity:1},{slug:shop.MUG_PRODUCT.slug,colour:'white',quantity:1}];
+  const created=[];const {POST}=load('src/app/api/shop/basket/route.ts',{'@/lib/stripe':{stripeClient:()=>({checkout:{sessions:{create:async(params,opts)=>{created.push({params,opts});return {url:'https://checkout.stripe.com/example',livemode:true};}}}})}});
+  const body={items,email:'buyer@example.com',country:'GB',requestId:'11111111-1111-4111-8111-111111111111',pricePence:1};
+  const req=(value,origin=shop.SHOP_URL)=>new Request(shop.SHOP_URL+'/api/shop/basket',{method:'POST',headers:{origin,'content-type':'application/json'},body:JSON.stringify(value)});
+  assert.equal((await POST(req(body))).status,200);const data=created[0].params;
+  assert.equal(data.line_items.length,2);assert.equal(data.line_items[0].quantity,2);assert.equal(data.line_items[0].price,process.env[shop.SHIRT_PRODUCT.priceEnv]);
+  assert.equal(data.payment_intent_data.receipt_email,body.email);assert.equal(data.shipping_options[0].shipping_rate_data.fixed_amount.amount,0);assert.equal(data.cancel_url,shop.SHOP_URL+'/shop/basket');
+  assert.equal(basket.basketFromMetadata(data.metadata).length,3);
+  await POST(req({...body,email:'another@example.com'}));assert.notEqual(created[0].opts.idempotencyKey,created[1].opts.idempotencyKey);
+  assert.equal((await POST(req({...body,items:[{...items[0],size:'no'}]}))).status,400);
+  assert.equal((await POST(req({...body,email:''}))).status,400);assert.equal((await POST(req(body,'https://wrong.example'))).status,403);
+  assert.equal((await POST(req({...body,country:'US',items:[{slug:shop.HOODIE_SLUG,colour:'black',size:'M',quantity:1}]}))).status,400);
 });

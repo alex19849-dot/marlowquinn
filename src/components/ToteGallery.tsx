@@ -9,7 +9,11 @@ const defaultPhotos = [
   { src: '/shop/filthy-bookshelf-detail.webp', label: 'Print close-up', alt: 'Close-up of the black tote with ivory Good Manners lettering, magenta Filthy Bookshelf lettering and six rainbow books', width: 1254, height: 1254 },
 ];
 
-export default function ToteGallery({ photos = defaultPhotos }: { photos?: readonly ProductPhoto[] }) {
+const editorialPrefixes = ['literary-moth-hoodie', 'filthy-bookshelf', 'good-manners-shirt', 'rainbow-plot-mug'];
+
+export default function ToteGallery({ photos: suppliedPhotos = defaultPhotos }: { photos?: readonly ProductPhoto[] }) {
+  const prefix = editorialPrefixes.find(prefix => suppliedPhotos.some(photo => photo.src === '/shop/' + prefix + '-model.webp'));
+  const photos = prefix ? [{ src: '/shop/' + prefix + '-editorial.webp', label: 'Product view', alt: suppliedPhotos[0].alt.replace(/Model wearing |Model carrying /gi, ''), width: 1254, height: 1254 }, ...suppliedPhotos] : suppliedPhotos;
   const [selected, setSelected] = useState(0);
   const photo = photos[selected];
   return <div className="tote-gallery">

@@ -537,3 +537,9 @@ test('basket checkout ignores client totals and binds all variants, email and de
   assert.equal((await POST(req({...body,email:''}))).status,400);assert.equal((await POST(req(body,'https://wrong.example'))).status,403);
   assert.equal((await POST(req({...body,country:'US',items:[{slug:shop.HOODIE_SLUG,colour:'black',size:'M',quantity:1}]}))).status,400);
 });
+
+
+test('different mug designs share the courier band at five mugs',()=>{
+  const items=[{slug:shop.MUG_PRODUCT.slug,colour:'white',quantity:4},{slug:shop.PLOT_MUG_PRODUCT.slug,colour:'white',quantity:1}];
+  for(const country of ['DE','CA','US','AU'])assert.equal(basket.basketDelivery(country,items).amount,shop.deliveryQuote(country,5,shop.MUG_PRODUCT.slug).amount);
+});

@@ -24,10 +24,17 @@ export function normaliseBasket(value: unknown): BasketItem[] | null {
 export function basketSubtotal(items: BasketItem[]) { return items.reduce((total, item) => total + getToteProduct(item.slug)!.pricePence * item.quantity, 0); }
 export function basketDelivery(country: string, items: BasketItem[]) {
   if (!normaliseBasket(items)) return null;
-  const groups = new Map<string, number>();
-  for (const item of items) groups.set(item.slug, (groups.get(item.slug) || 0) + item.quantity);
+  // Combine designs with identical prices, duty and shipping bands. In particular,
+  // five mugs require the courier band even when they have different prints.
+  const groups = new Map<string, { slug: string; quantity: number }>();
+  for (const item of items) {
+    const product = getToteProduct(item.slug)!;
+    const key = `${product.kind}:${product.pricePence}:${product.usDutyPermille}`;
+    const group = groups.get(key) || { slug: item.slug, quantity: 0 };
+    group.quantity += item.quantity; groups.set(key, group);
+  }
   let amount = 0;
-  for (const [slug, quantity] of groups) {
+  for (const { slug, quantity } of groups.values()) {
     const quote = deliveryQuote(country, quantity, slug);
     if (!quote) return null;
     amount += quote.amount;

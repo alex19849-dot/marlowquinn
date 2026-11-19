@@ -1,57 +1,35 @@
 'use client';
-
-import { useRef, useState } from 'react';
+import { useState } from 'react';
 import Link from 'next/link';
-import { deliveryQuote, MAX_TOTE_QUANTITY, SHOP_COUNTRIES, TOTE_SLUG, getToteProduct, productSizes } from '@/lib/shop';
-
-const money = (pence: number) => new Intl.NumberFormat('en-GB', { style: 'currency', currency: 'GBP' }).format(pence / 100);
-const names = new Intl.DisplayNames(['en-GB'], { type: 'region' });
-const countries = SHOP_COUNTRIES.map(code => ({ code, name: names.of(code) || code })).sort((a, b) => a.code === 'GB' ? -1 : b.code === 'GB' ? 1 : a.name.localeCompare(b.name));
+import { MAX_TOTE_QUANTITY, TOTE_SLUG, getToteProduct, productSizes } from '@/lib/shop';
+import { money } from '@/lib/basket';
+import { useBasket } from './BasketProvider';
 
 export default function ToteCheckout({ enabled, productSlug = TOTE_SLUG, colour = 'black', onColourChange }: { enabled: boolean; productSlug?: string; colour?: 'black' | 'white'; onColourChange?: (colour: 'black' | 'white') => void }) {
   const product = getToteProduct(productSlug)!;
-  const hoodie = product.kind === 'hoodie';
-  const shirt = product.kind === 'shirt' || hoodie;
-  const mug = product.kind === 'mug';
-  const unit = hoodie ? 'hoodie' : shirt ? 'T-shirt' : mug ? 'mug' : 'tote';
+  const sized = product.kind === 'shirt' || product.kind === 'hoodie';
   const [size, setSize] = useState('');
-  const [email, setEmail] = useState('');
-  const [country, setCountry] = useState('GB');
   const [quantity, setQuantity] = useState(1);
-  const [pending, setPending] = useState(false);
-  const [error, setError] = useState('');
-  const requestId = useRef('');
-  const quote = deliveryQuote(country, quantity, productSlug)!;
-
-  async function checkout(event: React.FormEvent<HTMLFormElement>) {
+  const [message, setMessage] = useState('');
+  const [added, setAdded] = useState(false);
+  const basket = useBasket();
+  function add(event: React.FormEvent<HTMLFormElement>) {
     event.preventDefault();
-    if (pending) return;
-    setPending(true); setError('');
-    requestId.current ||= crypto.randomUUID();
-    try {
-      const response = await fetch('/api/shop/checkout', { method: 'POST', headers: { 'Content-Type': 'application/json' }, body: JSON.stringify({ email, country, quantity, productSlug, colour, size: shirt ? size : undefined, requestId: requestId.current }), signal: AbortSignal.timeout(25000) });
-      const result = await response.json();
-      if (!response.ok || typeof result.url !== 'string') throw new Error(result.message || 'Checkout could not open. Please try again.');
-      const url = new URL(result.url);
-      if (url.protocol !== 'https:' || url.hostname !== 'checkout.stripe.com') throw new Error('Checkout could not open. Please try again.');
-      window.location.assign(url.href);
-    } catch (cause) {
-      setError(cause instanceof Error && cause.name !== 'TimeoutError' ? cause.message : 'Checkout took too long. Please try again.');
-      setPending(false);
-    }
+    const ok = basket.add({ slug: productSlug, colour: product.kind === 'mug' ? 'white' : colour, ...(sized ? { size } : {}), quantity });
+    setAdded(ok); setMessage(ok ? `${quantity === 1 ? 'Item' : 'Items'} added to your basket.` : 'Your basket can hold up to 6 items. Please review it before adding more.');
   }
-
-  if (!enabled) return <div className="shop-launch"><span className="shop-status">Coming soon</span><p>{money(product.pricePence)} with UK tracked delivery included. International delivery will be calculated at checkout.</p><Link href="/newsletter" className="button-primary">Keep me in the loop</Link></div>;
-  return <form className="shop-launch tote-checkout" onSubmit={checkout}>
-    {onColourChange && <div className="shirt-size-field"><label htmlFor="product-colour">Colour</label><select id="product-colour" value={colour} disabled={pending} onChange={event => { onColourChange(event.target.value as 'black' | 'white'); requestId.current = ''; setError(''); }}><option value="black">Black</option><option value="white">White</option></select></div>}
-    <p className="tote-price">{money(product.pricePence)} <span>per {unit}</span></p>
-    {shirt && <div className="shirt-size-field"><label htmlFor="shirt-size">Size</label><select id="shirt-size" required value={size} disabled={pending} onChange={event => { setSize(event.target.value); requestId.current = ''; setError(''); }}><option value="" disabled>Choose your size</option>{productSizes(productSlug).map(value => <option key={value} value={value}>{value}</option>)}</select><a className="text-link" href="#size-guide">Check the size guide</a><p className="fine-print">{hoodie ? 'Classic unisex fit. Compare the measurements with a hoodie you already own.' : 'Women’s fitted cut. Compare the measurements with a T-shirt you already own.'}</p></div>}
-    <div className="tote-checkout-fields"><div><label htmlFor="tote-country">Deliver to</label><select id="tote-country" value={country} disabled={pending} onChange={event => { setCountry(event.target.value); requestId.current = ''; setError(''); }}>{countries.filter(item => !hoodie || item.code === 'GB').map(item => <option key={item.code} value={item.code}>{item.name}</option>)}</select></div><div><label htmlFor="tote-quantity">Quantity</label><select id="tote-quantity" value={quantity} disabled={pending} onChange={event => { setQuantity(Number(event.target.value)); requestId.current = ''; setError(''); }}>{Array.from({ length: MAX_TOTE_QUANTITY }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></div></div>
-    <dl className="tote-measurements" aria-live="polite"><div><dt>{quantity === 1 ? (hoodie ? 'Hoodie' : shirt ? 'T-shirt' : mug ? 'Mug' : 'Tote') : `${quantity} ${unit}s`}</dt><dd>{money(quantity * product.pricePence)}</dd></div><div><dt>{country === 'US' ? 'Delivery & US duty' : 'Delivery'}</dt><dd>{quote.amount ? money(quote.amount) : 'Included'}</dd></div><div><dt>Total</dt><dd>{money(quantity * product.pricePence + quote.amount)}</dd></div></dl>
-    <div className="shirt-size-field"><label htmlFor="receipt-email">Email for your receipt</label><input id="receipt-email" type="email" placeholder="you@example.com" style={{width:"100%",minHeight:48,padding:".75rem 1rem",border:"1px solid var(--line, #d6c8cf)",borderRadius:8,background:"#fff",color:"#20161e",font:"inherit"}} autoComplete="email" required maxLength={254} value={email} disabled={pending} onChange={event => { setEmail(event.target.value); requestId.current = ''; setError(''); }}/><p className="fine-print">Stripe will email your payment receipt here. This does not subscribe you to the reader list.</p></div>
-    <button type="submit" className="button-primary" disabled={pending}>{pending ? 'Opening secure checkout…' : 'Checkout securely'}</button>
-    <p className="form-message" role="status" data-error={Boolean(error)}>{error}</p>
-    <p className="fine-print">Made to order in 3 to 5 working days, plus delivery. {country === 'US' ? 'US import duty is included in the delivery charge.' : country !== 'GB' ? 'Local import taxes or duties may be payable on arrival.' : 'UK tracked delivery is included.'}</p>
-    <p className="fine-print">For larger orders or another destination, <Link href="/contact" className="text-link">contact us</Link>.</p>
+  if (!enabled) return <div className="shop-launch"><p>This item is temporarily unavailable.</p><Link href="/shop" className="button-secondary">Explore the collection</Link></div>;
+  return <form className="shop-launch tote-checkout product-purchase" onSubmit={add}>
+    <p className="tote-price">{money(product.pricePence)} <span>UK delivery included</span></p>
+    {onColourChange && <fieldset className="colour-picker"><legend>Colour: {colour === 'black' ? 'Black' : 'White'}</legend>{(['black','white'] as const).map(value => <button key={value} type="button" className={'colour-option colour-' + value} aria-label={value === 'black' ? 'Choose black' : 'Choose white'} aria-pressed={colour === value} onClick={() => { onColourChange(value); setAdded(false); setMessage(''); }}><span/>{value === 'black' ? 'Black' : 'White'}</button>)}</fieldset>}
+    <div className={'purchase-options' + (sized ? '' : ' one-option')}>
+      {sized && <div className="shirt-size-field"><label htmlFor="shirt-size">Size</label><select id="shirt-size" required value={size} onChange={event => { setSize(event.target.value); setAdded(false); setMessage(''); }}><option value="" disabled>Choose your size</option>{productSizes(productSlug).map(value => <option key={value} value={value}>{value}</option>)}</select></div>}
+      <div><label htmlFor="tote-quantity">Quantity</label><select id="tote-quantity" value={quantity} onChange={event => { setQuantity(Number(event.target.value)); setAdded(false); setMessage(''); }}>{Array.from({ length: MAX_TOTE_QUANTITY }, (_, index) => <option key={index + 1} value={index + 1}>{index + 1}</option>)}</select></div>
+    </div>
+    {sized && <p className="fit-note"><a className="text-link" href="#size-guide">Size guide</a><span>{product.kind === 'hoodie' ? 'Classic unisex fit' : 'Women’s fitted cut'}</span></p>}
+    <button type="submit" className="button-primary" disabled={!basket.ready}>Add to basket</button>
+    <p className="form-message" role="status" data-error={Boolean(message && !added)}>{message}</p>
+    {added && <div className="added-actions"><Link className="button-secondary" href="/shop/basket">View basket & checkout</Link><Link className="text-link" href="/shop">Keep browsing</Link></div>}
+    <div className="purchase-reassurance"><p>Made for you in 3 to 5 working days, plus delivery.</p><p>{product.kind === 'hoodie' ? 'UK delivery only for this hoodie.' : 'International delivery calculated in your basket.'} Pay securely with Stripe.</p></div>
   </form>;
 }

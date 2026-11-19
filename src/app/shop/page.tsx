@@ -21,6 +21,7 @@ const titles: Record<string, string> = {
   'quarterbacks-thighs-football-t-shirt': 'The Quarterback’s Thighs',
 };
 const pageSize = 6;
+const editorial = new Set(['literary-moth-hoodie', 'filthy-bookshelf', 'good-manners-shirt', 'rainbow-plot-mug']);
 type Props = { searchParams: Promise<{ category?: string | string[]; page?: string | string[] }> };
 
 export default async function ShopPage({ searchParams }: Props) {
@@ -38,12 +39,12 @@ export default async function ShopPage({ searchParams }: Props) {
   const href = (key: string, number = 1) => `/shop${key === 'all' && number === 1 ? '' : '?' + new URLSearchParams({ ...(key !== 'all' ? { category: key } : {}), ...(number > 1 ? { page: String(number) } : {}) }).toString()}#collection`;
 
   return <main id="main-content" className="page-width shop-page shop-browse">
-    <section className="shop-intro">
+    <section className="shop-intro shop-editorial"><div className="shop-editorial-copy">
       <p className="eyebrow">The Marlow Quinn shop</p>
       <h1>Good books.<br/><em>Questionable company.</em></h1>
-      <p>A little something for your reading habit. Find your favourite, wear your confession, or put the kettle on.</p>
+      <p>For the plot. For the men. For the readers who never keep it innocent.</p><a href="#collection" className="button-primary">Find your next favourite</a>
       <div className="shop-promises"><span>UK delivery included</span><span>Made to order</span><span>Secure checkout</span></div>
-    </section>
+    </div><Link href="/shop/good-books-bad-intentions-hoodie" className="shop-editorial-image"><Image src="/shop/literary-moth-hoodie-editorial.webp" alt="Black Good Books. Bad Intentions. moth hoodie laid flat with its print clearly visible" width={1254} height={1254} priority sizes="(max-width:767px) 100vw, 520px"/><span><span>Meet your new reading uniform</span><strong>The literary moth hoodie</strong><span>£39.99 · UK delivery included</span></span></Link></section>
     <section id="collection" className="shop-catalogue" aria-labelledby="collection-heading">
       <nav className="shop-categories" aria-label="Shop by product type">
         {categories.map(item => {
@@ -62,24 +63,24 @@ export default async function ShopPage({ searchParams }: Props) {
         const colours = hasColourOptions(product.slug) ? 'Black or white' : mug ? 'White' : 'Black';
         return <article className="shop-product-card" key={product.slug}>
           <Link className={'shop-feature-photo'+(mug ? ' shop-mug-photo' : '')} href={'/shop/'+product.slug} aria-label={'View '+title+' '+type.toLowerCase()}>
-            <Image src={'/shop/'+productImagePrefix(product.slug)+'-model.webp'} alt={mug ? 'White ceramic mug with the '+product.name+' bookish design' : ((shirt || hoodie) ? 'Model wearing the black ' : 'Model carrying the black ')+product.name+(hoodie ? ' cotton-blend ' : ' organic cotton ')+type.toLowerCase()} width={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 360) : 1157} height={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 422) : 1359} priority={index < 3} sizes="(max-width:600px) calc((100vw - 48px) / 2), (max-width:900px) 45vw, 380px"/>
+            <Image src={'/shop/'+productImagePrefix(product.slug)+(editorial.has(product.imagePrefix) ? '-editorial.webp' : '-detail.webp')} alt={product.name + ', ' + colours.toLowerCase() + ' ' + type.toLowerCase() + ', showing the printed design'} width={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 360) : 1157} height={mug ? (product.imagePrefix === 'rainbow-plot-mug' ? 1254 : 422) : 1359} priority={index < 3} sizes="(max-width:600px) calc((100vw - 48px) / 2), (max-width:900px) 45vw, 380px"/>
             {!open && <span className="shop-photo-badge">Coming soon</span>}
           </Link>
           <div className="shop-product-card-body">
             <p className="shop-card-kind">{type}{mug ? ' · 11oz' : hoodie ? ' · XS to 2XL' : shirt ? ' · XS–3XL' : ''}</p>
             <h3><Link href={'/shop/'+product.slug}>{title}</Link></h3>
             <p className="shop-card-options">{mug ? 'Glossy ceramic' : hoodie ? 'Cotton blend' : 'Organic cotton'} · {colours}</p>
-            <div className="shop-card-footer"><p className="shop-card-price">£{(product.pricePence / 100).toFixed(2)}<span>UK delivery included</span></p><Link href={'/shop/'+product.slug} className="button-secondary" aria-label={'View '+title+' '+type.toLowerCase()}>View item <span aria-hidden="true">→</span></Link></div>
+            <div className="shop-card-footer"><p className="shop-card-price">£{(product.pricePence / 100).toFixed(2)}<span>UK delivery included</span></p><Link href={'/shop/'+product.slug} className="button-secondary" aria-label={'View '+title+' '+type.toLowerCase()}>View item</Link></div>
           </div>
         </article>;
       })}</div>
       {pageCount > 1 && <nav className="shop-pagination" aria-label="Product pages">
-        {page > 1 && <Link href={href(category.key, page - 1)} className="button-secondary">← Previous</Link>}
+        {page > 1 && <Link href={href(category.key, page - 1)} className="button-secondary">Previous</Link>}
         <div className="shop-page-numbers">{Array.from({ length: pageCount }, (_, i) => i + 1).map(number => number === page ? <span key={number} aria-current="page" aria-label={'Page '+number}>{number}</span> : <Link key={number} href={href(category.key, number)} aria-label={'Page '+number}>{number}</Link>)}</div>
-        {page < pageCount && <Link href={href(category.key, page + 1)} className="button-secondary">Next →</Link>}
+        {page < pageCount && <Link href={href(category.key, page + 1)} className="button-secondary">Next</Link>}
       </nav>}
-      <p className="fine-print shop-note">International delivery is calculated on each product page. Choose a design to see more photos, colours and product details.</p>
+      <p className="fine-print shop-note">Add your favourites to one basket. International delivery is calculated before payment. Choose a design to see more photos, colours and product details.</p>
     </section>
-    <section className="shop-reader-note"><div><p className="eyebrow">More temptation, less inbox clutter</p><h2>Your next favourite is coming.</h2><p>Join the reader list for new designs, new books and fictional men worth losing sleep over.</p></div><Link href="/newsletter" className="button-secondary">Join the reader list <span aria-hidden="true">→</span></Link></section>
+    <section className="shop-reader-note"><div><p className="eyebrow">More temptation, less inbox clutter</p><h2>Your next favourite is coming.</h2><p>Join the reader list for new designs, new books and fictional men worth losing sleep over.</p></div><Link href="/newsletter" className="button-secondary">Join the reader list</Link></section>
   </main>;
 }

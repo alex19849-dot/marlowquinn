@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import AnalyticsChoice from "@/components/AnalyticsChoice";
 import "./globals.css";
+import BasketProvider from '@/components/BasketProvider';
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 
@@ -97,9 +98,9 @@ export default function RootLayout({
         />
 
         <a href="#main-content" className="skip-link">Skip to content</a>
-        <Navbar />
+        <BasketProvider><Navbar />
         {children}
-        <Footer />
+        <Footer /></BasketProvider>
       </body>
     </html>
   );

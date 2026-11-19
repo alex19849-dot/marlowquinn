@@ -1,8 +1,16 @@
+import type { BasketItem } from './basket';
 import { createHash } from 'node:crypto';
 import type Stripe from 'stripe';
 import { getToteProduct, validProductSize, getProductColour, productImagePrefix, hasColourOptions, paidUnitPrice } from './shop';
 
-export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: number) {
+type SupplierOrder = { external_id: string; brand: string | undefined; buyer_email: string | undefined; comments: string; shipping_address: { firstName: string | undefined; lastName: string; address1: string; address2: string; city: string; county: string; postcode: string; country: string; phone1: string }; shipping: { shippingMethod: string }; items: { pn: string | undefined; quantity: number; retailPrice: number; retailCurrency: string; description: string; designs: { front: string | undefined }; mockups: { front: string } }[] };
+
+export function buildSupplierOrder(session: Stripe.Checkout.Session, quantity: number, basketItems?: BasketItem[]): SupplierOrder {
+  if (basketItems) {
+    const orders = basketItems.map(item => buildSupplierOrder({ ...session, metadata: { website_slug: item.slug, website_colour: item.colour, ...(item.size ? { website_size: item.size } : {}) }, line_items: { ...session.line_items, data: session.line_items!.data.filter(line => line.price?.id === process.env[getToteProduct(item.slug)!.priceEnv]) } } as Stripe.Checkout.Session, item.quantity));
+    const mugCount = basketItems.filter(item => getToteProduct(item.slug)?.kind === "mug").reduce((count, item) => count + item.quantity, 0);
+    return { ...orders[0], shipping: { shippingMethod: mugCount >= 5 && session.collected_information?.shipping_details?.address?.country !== "GB" ? "courier" : "recorded" }, items: orders.flatMap(order => order.items) };
+  }
   const product = getToteProduct(session.metadata?.website_slug || '');
   if (!product) throw new Error('Unknown product.');
   const colour = getProductColour(product.slug, session.metadata?.website_colour);

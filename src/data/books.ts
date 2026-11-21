@@ -1,5 +1,26 @@
 export const books = [
   {
+    "slug": "naughty-by-nature",
+    "title": "Naughty by Nature",
+    "subgenre": "Spicy MM Christmas Romantasy",
+    "blurb": "A witch, a demon, and a soul bargain. Christmas in Bellwether is about to get complicated.\n\nNathan Jason has enough to do before Christmas without a demon complicating his plans. But a soul bargain draws him into the affairs of the Ember Dominion, where magic comes with obligations and every deal has a price.\n\nAs Christmas gets closer, so does the demon. Nathan has to decide what he’s willing to risk for a man he was never supposed to want.",
+    "contentWarnings": [
+      "Explicit sexual content between adults",
+      "Soul bargains and supernatural peril"
+    ],
+    "heat": "★★★★★",
+    "length": "Novel",
+    "ending": "HEA",
+    "tropes": [
+      "Witch / Demon",
+      "Soul Bargain",
+      "Christmas Romance"
+    ],
+    "cover": "/covers/naughty-by-nature.jpg",
+    "amazon": "https://www.amazon.com/dp/B0HSFP2J7S",
+    "ku": false
+  },
+  {
     "slug": "holiday-hookup",
     "title": "Holiday Hookup",
     "subgenre": "MM Christmas Romance",

@@ -543,3 +543,30 @@ test('different mug designs share the courier band at five mugs',()=>{
   const items=[{slug:shop.MUG_PRODUCT.slug,colour:'white',quantity:4},{slug:shop.PLOT_MUG_PRODUCT.slug,colour:'white',quantity:1}];
   for(const country of ['DE','CA','US','AU'])assert.equal(basket.basketDelivery(country,items).amount,shop.deliveryQuote(country,5,shop.MUG_PRODUCT.slug).amount);
 });
+
+test('butterfly and moth hoodies keep separate prices and artwork for every available size', async () => {
+  const butterfly = shop.BUTTERFLY_HOODIE_PRODUCT;
+  const moth = shop.HOODIE_PRODUCT;
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  for (const product of [butterfly, moth]) {
+    process.env[product.priceEnv] = 'price_' + product.slug;
+    process.env[product.artEnv] = 'https://example.com/' + product.slug + '.png';
+  }
+  for (const size of shop.HOODIE_SIZES) {
+    const items = [{ slug: butterfly.slug, colour: 'black', size, quantity: 1 }, { slug: moth.slug, colour: 'black', size: 'L', quantity: 1 }];
+    assert.ok(basket.normaliseBasket(items));
+    assert.equal(basket.basketSubtotal(items), 7998);
+    assert.equal(basket.basketDelivery('GB', items).amount, 0);
+    assert.equal(basket.basketDelivery('US', items), null);
+    const session = fixture({ metadata: basket.basketMetadata(items), line_items: { data: [butterfly, moth].map(product => ({ quantity: 1, amount_total: 3999, price: { id: process.env[product.priceEnv] } })) } });
+    const order = supplier.buildSupplierOrder(session, 2, items);
+    assert.equal(order.items[0].pn, 'JH001-JBK-' + size);
+    assert.equal(order.items[0].designs.front, process.env[butterfly.artEnv]);
+    assert.equal(order.items[1].designs.front, process.env[moth.artEnv]);
+    assert.ok(order.items[0].mockups.front.endsWith('butterfly-book-hoodie-detail.webp'));
+    assert.equal(order.items[0].retailPrice, 39.99);
+    assert.equal(shop.paidUnitPrice(butterfly.slug, process.env[moth.priceEnv]), null);
+    assert.equal(shop.paidUnitPrice(butterfly.slug, 'price_1Ud6UpBeoJbpABNhpp7Cbrwf'), null);
+  }
+  assert.equal(basket.normaliseBasket([{ slug: butterfly.slug, colour: 'black', size: '3XL', quantity: 1 }]), null);
+});

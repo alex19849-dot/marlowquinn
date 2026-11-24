@@ -1,4 +1,4 @@
-import { SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, HOODIE_PRODUCT, BUTTERFLY_HOODIE_PRODUCT } from '@/lib/shop';
+import { LITERARY_PRODUCTS, SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, HOODIE_PRODUCT, BUTTERFLY_HOODIE_PRODUCT } from '@/lib/shop';
 import { books } from "@/data/books";
 
 export default function sitemap() {
@@ -16,5 +16,5 @@ export default function sitemap() {
     lastModified: new Date(),
   }));
 
-  return [...staticPages, ...bookPages, ...[...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, HOODIE_PRODUCT, BUTTERFLY_HOODIE_PRODUCT].map(product => ({ url: `${baseUrl}/shop/${product.slug}`, lastModified: new Date() }))];
+  return [...staticPages, ...bookPages, ...[...LITERARY_PRODUCTS, ...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, HOODIE_PRODUCT, BUTTERFLY_HOODIE_PRODUCT].map(product => ({ url: `${baseUrl}/shop/${product.slug}`, lastModified: new Date() }))];
 }

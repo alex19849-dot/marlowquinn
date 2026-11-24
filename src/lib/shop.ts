@@ -21,10 +21,16 @@ export const SPORTS_PRODUCTS = [
   { ...TOTE_PRODUCTS[0], slug: 'quarterbacks-thighs-football-tote', name: 'Here for the Plot. And the Quarterback’s Thighs.', priceEnv: 'STRIPE_FOOTBALL_TOTE_PRICE_ID', productEnv: 'STRIPE_FOOTBALL_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_FOOTBALL_ART_URL', imagePrefix: 'football-tote', sport: 'football' },
   { ...SHIRT_PRODUCT, slug: 'quarterbacks-thighs-football-t-shirt', name: 'Here for the Plot. And the Quarterback’s Thighs.', priceEnv: 'STRIPE_FOOTBALL_SHIRT_PRICE_ID', productEnv: 'STRIPE_FOOTBALL_SHIRT_PRODUCT_ID', artEnv: 'INKTHREADABLE_FOOTBALL_ART_URL', imagePrefix: 'football-shirt', sport: 'football' },
 ] as const;
+export const LITERARY_PRODUCTS = [
+  { ...TOTE_PRODUCTS[0], slug: 'beautiful-things-between-the-covers-tote', name: BUTTERFLY_HOODIE_PRODUCT.name, design: 'butterfly', priceEnv: 'STRIPE_BUTTERFLY_TOTE_PRICE_ID', productEnv: 'STRIPE_BUTTERFLY_TOTE_PRODUCT_ID', artEnv: BUTTERFLY_HOODIE_PRODUCT.artEnv, imagePrefix: 'photos/butterfly-book-tote' },
+  { ...SHIRT_PRODUCT, slug: 'beautiful-things-between-the-covers-t-shirt', name: BUTTERFLY_HOODIE_PRODUCT.name, design: 'butterfly', priceEnv: 'STRIPE_BUTTERFLY_SHIRT_PRICE_ID', productEnv: 'STRIPE_BUTTERFLY_SHIRT_PRODUCT_ID', artEnv: BUTTERFLY_HOODIE_PRODUCT.artEnv, imagePrefix: 'photos/butterfly-book-shirt' },
+  { ...TOTE_PRODUCTS[0], slug: 'good-books-bad-intentions-tote', name: HOODIE_PRODUCT.name, design: 'moth', priceEnv: 'STRIPE_MOTH_TOTE_PRICE_ID', productEnv: 'STRIPE_MOTH_TOTE_PRODUCT_ID', artEnv: HOODIE_PRODUCT.artEnv, imagePrefix: 'photos/literary-moth-tote' },
+  { ...SHIRT_PRODUCT, slug: 'good-books-bad-intentions-t-shirt', name: HOODIE_PRODUCT.name, design: 'moth', priceEnv: 'STRIPE_MOTH_SHIRT_PRICE_ID', productEnv: 'STRIPE_MOTH_SHIRT_PRODUCT_ID', artEnv: HOODIE_PRODUCT.artEnv, imagePrefix: 'photos/literary-moth-shirt' },
+] as const;
 export const MUG_PRODUCT = { slug: 'sweet-romance-filthy-chapters-mug', name: 'Sweet Romance. Filthy Chapters.', priceEnv: 'STRIPE_ROMANCE_MUG_PRICE_ID', productEnv: 'STRIPE_ROMANCE_MUG_PRODUCT_ID', artEnv: 'INKTHREADABLE_ROMANCE_MUG_ART_URL', imagePrefix: 'sweet-romance-mug', kind: 'mug', pricePence: 1299, usDutyPermille: 185 } as const;
 export const PLOT_MUG_PRODUCT = { ...MUG_PRODUCT, slug: 'came-for-the-plot-stayed-for-the-men-mug', name: 'I Came for the Plot. Stayed for the Men.', priceEnv: 'STRIPE_PLOT_MUG_PRICE_ID', productEnv: 'STRIPE_PLOT_MUG_PRODUCT_ID', artEnv: 'INKTHREADABLE_PLOT_MUG_ART_URL', imagePrefix: 'rainbow-plot-mug' } as const;
 export const VAMPIRE_TOTE_PRODUCT = { ...TOTE_PRODUCTS[0], slug: 'my-book-boyfriend-bites-tote', name: 'My Book Boyfriend Bites.', priceEnv: 'STRIPE_VAMPIRE_TOTE_PRICE_ID', productEnv: 'STRIPE_VAMPIRE_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_VAMPIRE_TOTE_ART_URL', imagePrefix: 'vampire-boyfriend-tote' } as const;
-export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT, ...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, BUTTERFLY_HOODIE_PRODUCT, HOODIE_PRODUCT] as const;
+export const SHOP_PRODUCTS = [...LITERARY_PRODUCTS, ...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT, ...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, BUTTERFLY_HOODIE_PRODUCT, HOODIE_PRODUCT] as const;
 export function validShirtSize(size: unknown): size is typeof SHIRT_SIZES[number] {
   return typeof size === 'string' && (SHIRT_SIZES as readonly string[]).includes(size);
 }

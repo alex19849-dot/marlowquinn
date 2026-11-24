@@ -570,3 +570,53 @@ test('butterfly and moth hoodies keep separate prices and artwork for every avai
   }
   assert.equal(basket.normaliseBasket([{ slug: butterfly.slug, colour: 'black', size: '3XL', quantity: 1 }]), null);
 });
+
+test('literary totes and tees retain their garment, original artwork and seven tee sizes in mixed orders', () => {
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  const products = shop.LITERARY_PRODUCTS;
+  assert.equal(products.length, 4);
+  for (const p of products) {
+    process.env[p.priceEnv] = 'price_' + p.slug;
+    process.env[p.artEnv] = 'https://example.com/' + p.design + '.png';
+    assert.equal(shop.getProductColour(p.slug, 'white'), undefined);
+    assert.equal(p.pricePence, p.kind === 'shirt' ? 2499 : 1999);
+  }
+  process.env.INKTHREADABLE_TOTE_PN = 'STAU773-BLK';
+  for (const size of shop.SHIRT_SIZES) {
+    const items = products.map(p => ({ slug: p.slug, colour: 'black', quantity: 1, ...(p.kind === 'shirt' ? { size } : {}) }));
+    assert.ok(basket.normaliseBasket(items));
+    assert.equal(basket.basketSubtotal(items), 8996);
+    assert.equal(basket.basketDelivery('GB', items).amount, 0);
+    assert.ok(basket.basketDelivery('US', items));
+    const lines = products.map(p => ({ quantity: 1, amount_total: p.pricePence, price: { id: process.env[p.priceEnv] } }));
+    const session = fixture({ metadata: basket.basketMetadata(items), line_items: { data: lines }, amount_total: 8996 });
+    const order = supplier.buildSupplierOrder(session, 4, items);
+    assert.equal(order.items.length, 4);
+    products.forEach((p, i) => {
+      assert.equal(order.items[i].pn, p.kind === 'shirt' ? 'STTW079-BLK-' + size : 'STAU773-BLK');
+      assert.equal(order.items[i].designs.front, process.env[p.artEnv]);
+      assert.equal(order.items[i].retailPrice, p.pricePence / 100);
+      assert.equal(order.items[i].mockups.front, shop.SHOP_URL + '/shop/' + p.imagePrefix + '-detail.webp');
+      assert.equal(shop.paidUnitPrice(p.slug, process.env[products[(i + 1) % 4].priceEnv]), null);
+    });
+  }
+  assert.equal(basket.normaliseBasket([{ slug: products[1].slug, colour: 'black', size: '4XL', quantity: 1 }]), null);
+});
+
+test('public literary image route serves only the eight product photos', async () => {
+  const calls = [];
+  const { GET } = load('src/app/shop/photos/[image]/route.ts', { '@vercel/blob': { get: async (name, options) => { calls.push({ name, options }); return { statusCode: 200, stream: new ReadableStream({ start(c) { c.enqueue(new TextEncoder().encode('photo')); c.close(); } }) }; } } });
+  for (const p of shop.LITERARY_PRODUCTS) {
+    for (const view of ['editorial', 'detail']) {
+      const image = p.imagePrefix.split('/')[1] + '-' + view + '.webp';
+      const response = await GET(new Request('https://example.com'), { params: Promise.resolve({ image }) });
+      assert.equal(response.status, 200); assert.equal(response.headers.get('Content-Type'), 'image/webp');
+      assert.equal(calls.at(-1).name, 'shop-images/' + image); assert.equal(calls.at(-1).options.access, 'private');
+      await response.text();
+    }
+  }
+  for (const image of ['../shop-orders/order.json', 'shop-orders.json', 'other.webp', 'literary-moth-tote-model.webp']) {
+    assert.equal((await GET(new Request('https://example.com'), { params: Promise.resolve({ image }) })).status, 404);
+  }
+  assert.equal(calls.length, 8);
+});

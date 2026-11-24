@@ -6,6 +6,8 @@ export const SHIRT_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL', '3XL'] as const;
 export const HOODIE_SLUG = 'good-books-bad-intentions-hoodie';
 export const HOODIE_SIZES = ['XS', 'S', 'M', 'L', 'XL', '2XL'] as const;
 export const HOODIE_PRODUCT = { slug: HOODIE_SLUG, name: 'Good Books. Bad Intentions.', priceEnv: 'STRIPE_MOTH_HOODIE_PRICE_ID', productEnv: 'STRIPE_MOTH_HOODIE_PRODUCT_ID', artEnv: 'INKTHREADABLE_MOTH_HOODIE_ART_URL', imagePrefix: 'literary-moth-hoodie', kind: 'hoodie', pricePence: 3999, usDutyPermille: 265 } as const;
+export const BUTTERFLY_HOODIE_SLUG = 'beautiful-things-between-the-covers-hoodie';
+export const BUTTERFLY_HOODIE_PRODUCT = { ...HOODIE_PRODUCT, slug: BUTTERFLY_HOODIE_SLUG, name: 'Beautiful Things Happen Between the Covers', priceEnv: 'STRIPE_BUTTERFLY_HOODIE_PRICE_ID', productEnv: 'STRIPE_BUTTERFLY_HOODIE_PRODUCT_ID', artEnv: 'INKTHREADABLE_BUTTERFLY_HOODIE_ART_URL', imagePrefix: 'butterfly-book-hoodie' } as const;
 export const TOTE_PRODUCTS = [
   { slug: TOTE_SLUG, name: 'Good Manners. Filthy Bookshelf.', priceEnv: 'STRIPE_TOTE_PRICE_ID', productEnv: 'STRIPE_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_TOTE_ART_URL', imagePrefix: 'filthy-bookshelf', kind: 'tote', pricePence: 1999, usDutyPermille: 163 },
   { slug: FICTIONAL_MEN_SLUG, name: 'Easily Distracted by Fictional Men', priceEnv: 'STRIPE_FICTIONAL_MEN_PRICE_ID', productEnv: 'STRIPE_FICTIONAL_MEN_PRODUCT_ID', artEnv: 'INKTHREADABLE_FICTIONAL_MEN_ART_URL', imagePrefix: 'fictional-men', kind: 'tote', pricePence: 1999, usDutyPermille: 163 },
@@ -22,12 +24,12 @@ export const SPORTS_PRODUCTS = [
 export const MUG_PRODUCT = { slug: 'sweet-romance-filthy-chapters-mug', name: 'Sweet Romance. Filthy Chapters.', priceEnv: 'STRIPE_ROMANCE_MUG_PRICE_ID', productEnv: 'STRIPE_ROMANCE_MUG_PRODUCT_ID', artEnv: 'INKTHREADABLE_ROMANCE_MUG_ART_URL', imagePrefix: 'sweet-romance-mug', kind: 'mug', pricePence: 1299, usDutyPermille: 185 } as const;
 export const PLOT_MUG_PRODUCT = { ...MUG_PRODUCT, slug: 'came-for-the-plot-stayed-for-the-men-mug', name: 'I Came for the Plot. Stayed for the Men.', priceEnv: 'STRIPE_PLOT_MUG_PRICE_ID', productEnv: 'STRIPE_PLOT_MUG_PRODUCT_ID', artEnv: 'INKTHREADABLE_PLOT_MUG_ART_URL', imagePrefix: 'rainbow-plot-mug' } as const;
 export const VAMPIRE_TOTE_PRODUCT = { ...TOTE_PRODUCTS[0], slug: 'my-book-boyfriend-bites-tote', name: 'My Book Boyfriend Bites.', priceEnv: 'STRIPE_VAMPIRE_TOTE_PRICE_ID', productEnv: 'STRIPE_VAMPIRE_TOTE_PRODUCT_ID', artEnv: 'INKTHREADABLE_VAMPIRE_TOTE_ART_URL', imagePrefix: 'vampire-boyfriend-tote' } as const;
-export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT, ...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, HOODIE_PRODUCT] as const;
+export const SHOP_PRODUCTS = [...TOTE_PRODUCTS, SHIRT_PRODUCT, FICTIONAL_SHIRT_PRODUCT, ...SPORTS_PRODUCTS, MUG_PRODUCT, PLOT_MUG_PRODUCT, VAMPIRE_TOTE_PRODUCT, BUTTERFLY_HOODIE_PRODUCT, HOODIE_PRODUCT] as const;
 export function validShirtSize(size: unknown): size is typeof SHIRT_SIZES[number] {
   return typeof size === 'string' && (SHIRT_SIZES as readonly string[]).includes(size);
 }
 
-export function productSizes(slug: string): readonly string[] { return slug === HOODIE_SLUG ? HOODIE_SIZES : getToteProduct(slug)?.kind === 'shirt' ? SHIRT_SIZES : []; }
+export function productSizes(slug: string): readonly string[] { return getToteProduct(slug)?.kind === 'hoodie' ? HOODIE_SIZES : getToteProduct(slug)?.kind === 'shirt' ? SHIRT_SIZES : []; }
 export function validProductSize(slug: string, size: unknown) { return typeof size === 'string' && productSizes(slug).includes(size); }
 
 export function getToteProduct(slug: string) {

@@ -1,5 +1,27 @@
 export const books = [
   {
+    "slug": "christmas-breakaway",
+    "title": "Christmas Breakaway",
+    "subgenre": "MM Christmas Hockey Romance",
+    "blurb": "Addison can’t get a puck past Jayce. Getting over his teammate might be even harder.\n\nWith the semester over and Frostmere gearing up for Christmas, defenseman Addison keeps finding reasons to spend more time with his goalie. Extra shots after practice are easy to explain. Wanting Jayce this much takes a little more work.\n\nA spicy MM Christmas hockey romance with teammates, off-ice chemistry, and a happily ever after.",
+    "contentWarnings": [
+      "Mature themes",
+      "Explicit adult content",
+      "Strong language"
+    ],
+    "heat": "★★★★★",
+    "length": "Novel",
+    "ending": "HEA",
+    "tropes": [
+      "Hockey Romance",
+      "Teammates to Lovers",
+      "Christmas Romance"
+    ],
+    "cover": "/covers/christmas-breakaway.jpg",
+    "amazon": "https://www.amazon.com/dp/B0HSP36HYF",
+    "ku": false
+  },
+  {
     "slug": "naughty-by-nature",
     "title": "Naughty by Nature",
     "subgenre": "Spicy MM Christmas Romantasy",

@@ -21,7 +21,7 @@ const titles: Record<string, string> = {
   'quarterbacks-thighs-football-t-shirt': 'The Quarterback’s Thighs',
 };
 const pageSize = 6;
-const editorial = new Set(['photos/butterfly-book-tote', 'photos/butterfly-book-shirt', 'photos/literary-moth-tote', 'photos/literary-moth-shirt', 'butterfly-book-hoodie', 'literary-moth-hoodie', 'filthy-bookshelf', 'good-manners-shirt', 'rainbow-plot-mug']);
+const editorial = new Set(['photos/ord-mug', 'photos/butterfly-book-tote', 'photos/butterfly-book-shirt', 'photos/literary-moth-tote', 'photos/literary-moth-shirt', 'butterfly-book-hoodie', 'literary-moth-hoodie', 'filthy-bookshelf', 'good-manners-shirt', 'rainbow-plot-mug']);
 type Props = { searchParams: Promise<{ category?: string | string[]; page?: string | string[] }> };
 
 export default async function ShopPage({ searchParams }: Props) {

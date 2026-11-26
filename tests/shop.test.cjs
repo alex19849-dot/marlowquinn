@@ -620,3 +620,22 @@ test('public literary image route serves only the eight product photos', async (
   }
   assert.equal(calls.length, 8);
 });
+
+test('ORD mug sends its own two-sided artwork and £12.99 price to the white ceramic supplier product', () => {
+  const p = shop.ORD_MUG_PRODUCT;
+  process.env[p.priceEnv] = 'price_ord_mug';
+  process.env[p.artEnv] = shop.SHOP_URL + '/shop/photos/ord-mug-wrap.png';
+  const items = [{ slug: p.slug, colour: 'white', quantity: 1 }];
+  assert.ok(basket.normaliseBasket(items));
+  assert.equal(basket.basketSubtotal(items), 1299);
+  assert.equal(basket.basketDelivery('GB', items).amount, 0);
+  assert.equal(basket.normaliseBasket([{ ...items[0], colour: 'black' }]), null);
+  const supplier = load('src/lib/inkthreadable.ts', { './shop': shop });
+  const session = fixture({ metadata: basket.basketMetadata(items), line_items: { data: [{ quantity: 1, amount_total: 1299, price: { id: process.env[p.priceEnv] } }] }, amount_total: 1299 });
+  const order = supplier.buildSupplierOrder(session, 1, items);
+  assert.equal(order.items[0].pn, 'MUG-CER-WHI');
+  assert.equal(order.items[0].designs.front, process.env[p.artEnv]);
+  assert.equal(order.items[0].mockups.front, shop.SHOP_URL + '/shop/photos/ord-mug-model.webp');
+  assert.equal(order.items[0].retailPrice, 12.99);
+  assert.equal(shop.paidUnitPrice(p.slug, process.env[shop.MUG_PRODUCT.priceEnv]), null);
+});

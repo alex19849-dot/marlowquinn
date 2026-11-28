@@ -1,5 +1,29 @@
 export const books = [
   {
+    "slug": "fir-real",
+    "title": "Fir Real?",
+    "subgenre": "MM Christmas Romance",
+    "blurb": "Two rival Christmas tree growers. One private video that should’ve stayed private.\n\nHarrison Bennett has enough to worry about keeping his family’s tree farm running through December. Then a video of him admiring his rival, Bailey Walsh, gets out, and suddenly the whole town is invested in what happens between them.\n\nBailey’s enjoying Harrison’s embarrassment a little too much. He’s also flirting back. With Christmas closing in and both farms counting on a big season, keeping their rivalry strictly business is getting harder by the day.",
+    "contentWarnings": [
+      "Explicit sexual content between adults",
+      "Strong language",
+      "Alcohol use",
+      "Accidentally shared private video and public embarrassment",
+      "Outdoor sexual encounter with a risk of discovery"
+    ],
+    "heat": "★★★★★",
+    "length": "Novel",
+    "ending": "HEA",
+    "tropes": [
+      "Rivals to Lovers",
+      "Small-Town Romance",
+      "Christmas Romance"
+    ],
+    "cover": "/covers/Fir-Real.jpg",
+    "amazon": "https://www.amazon.com/dp/B0HM47BCXS",
+    "ku": false
+  },
+  {
     "slug": "christmas-breakaway",
     "title": "Christmas Breakaway",
     "subgenre": "MM Christmas Hockey Romance",
